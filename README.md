@@ -3,696 +3,1913 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>เกมเติมตัวอักษรภาษาอังกฤษ</title>
+  <title>Checklist พัฒนาการเด็ก</title>
   <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&amp;family=Prompt:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ffeaa7 100%);
-      min-height: 100%;
-      width: 100%;
+      font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    }
+    
+    * {
+      font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    }
+    
+    input, select, textarea, button, label, option {
+      font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    }
+    
+    @keyframes checkmark {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    
+    .checkmark-appear {
+      animation: checkmark 0.3s ease-out;
     }
 
-    .game-container {
-      width: 100%;
-      min-height: 100%;
-      padding: 40px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(5deg); }
     }
 
-    .game-card {
-      background: linear-gradient(145deg, #fff5f7 0%, #ffe8f0 100%);
-      border-radius: 30px;
-      padding: 40px;
-      max-width: 900px;
-      width: 100%;
-      box-shadow: 0 20px 60px rgba(252, 182, 159, 0.4);
-      border: 3px solid rgba(255, 255, 255, 0.8);
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
     }
 
-    .game-header {
-      text-align: center;
-      margin-bottom: 30px;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    .game-title {
-      font-size: 36px;
-      background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 50%, #ffecd2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin: 0 0 10px 0;
-      font-weight: bold;
-      text-shadow: 2px 2px 4px rgba(255, 182, 193, 0.3);
-    }
-
-    .instructions {
-      font-size: 16px;
-      color: #666;
-      margin: 0;
-    }
-
-    .score-board {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-      padding: 20px;
-      border-radius: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 15px rgba(253, 203, 110, 0.3);
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .timer-display {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-size: 24px;
-      font-weight: bold;
-      color: #e17055;
-      box-shadow: 0 2px 10px rgba(225, 112, 85, 0.2);
-    }
-
-    .timer-icon {
-      font-size: 28px;
-    }
-
-    .category-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-      color: #6c5ce7;
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-size: 18px;
-      font-weight: 600;
-      box-shadow: 0 4px 15px rgba(168, 237, 234, 0.4);
-    }
-
-    .score-display {
-      font-size: 24px;
-      font-weight: bold;
-      color: #e17055;
-      background: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      box-shadow: 0 2px 10px rgba(225, 112, 85, 0.2);
-    }
-
-    .word-display {
-      text-align: center;
-      margin: 40px 0;
-    }
-
-    .hint-image {
-      margin: 0 auto 30px auto;
-      display: block;
-      filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.1));
-    }
-
-    .word-letters {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .letter-box {
-      width: 50px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      font-weight: bold;
-      text-transform: uppercase;
-      border: 3px solid #fab1a0;
-      border-radius: 15px;
-      background: linear-gradient(145deg, #dfe6e9 0%, #b2bec3 100%);
-      color: #2d3436;
-      box-shadow: 0 4px 10px rgba(250, 177, 160, 0.3);
-    }
-
-    .letter-box.blank {
-      background: linear-gradient(145deg, #ffeaa7 0%, #fdcb6e 100%);
-      border-color: #fab1a0;
-      border-style: dashed;
-      border-width: 3px;
-      animation: pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 4px 10px rgba(253, 203, 110, 0.3);
-      }
-      50% {
-        transform: scale(1.05);
-        box-shadow: 0 6px 15px rgba(253, 203, 110, 0.5);
-      }
-    }
-
-    .letter-box input {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-      text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      text-transform: uppercase;
-      color: #333;
-      outline: none;
-    }
-
-    .feedback-message {
-      text-align: center;
-      padding: 20px;
-      border-radius: 12px;
-      margin: 20px 0;
-      font-size: 20px;
-      font-weight: 600;
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .feedback-message.show {
-      opacity: 1;
-    }
-
-    .feedback-message.correct {
-      background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
-      color: #00b894;
-      border: 3px solid #55efc4;
-      box-shadow: 0 4px 15px rgba(85, 239, 196, 0.4);
-    }
-
-    .feedback-message.incorrect {
-      background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-      color: #e17055;
-      border: 3px solid #fab1a0;
-      box-shadow: 0 4px 15px rgba(250, 177, 160, 0.4);
-    }
-
-    .button-group {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      margin-top: 30px;
-    }
-
-    .game-button {
-      padding: 15px 40px;
-      font-size: 18px;
-      font-weight: 600;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .game-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    }
-
-    .game-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .check-button {
-      background: linear-gradient(135deg, #81ecec 0%, #74b9ff 100%);
-      color: white;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-    }
-
-    .check-button:hover:not(:disabled) {
-      background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
-    }
-
-    .next-button {
-      background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
-      color: white;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-    }
-
-    .next-button:hover:not(:disabled) {
-      background: linear-gradient(135deg, #fdcb6e 0%, #ff7675 100%);
-    }
-
-    .completion-screen {
-      display: none;
-      text-align: center;
-      padding: 40px;
-    }
-
-    .completion-screen.show {
-      display: block;
-    }
-
-    .completion-icon {
-      font-size: 80px;
-      margin-bottom: 20px;
-    }
-
-    .completion-title {
-      font-size: 36px;
-      background: linear-gradient(90deg, #ff9a9e 0%, #fad0c4 50%, #ffecd2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-
-    .final-score {
-      font-size: 28px;
-      color: #e17055;
-      margin-bottom: 15px;
-      background: white;
-      padding: 15px 30px;
-      border-radius: 25px;
-      display: inline-block;
-      box-shadow: 0 4px 15px rgba(225, 112, 85, 0.3);
-    }
-
-    @media (max-width: 768px) {
-      .game-card {
-        padding: 20px;
-      }
-
-      .game-title {
-        font-size: 28px;
-      }
-
-      .letter-box {
-        width: 40px;
-        height: 50px;
-        font-size: 22px;
-      }
-
-      .letter-box input {
-        font-size: 22px;
-      }
-
-      .game-button {
-        padding: 12px 30px;
-        font-size: 16px;
-      }
-
-      .score-board {
-        flex-direction: column;
-        gap: 15px;
-      }
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
  </head>
- <body>
-  <main class="game-container">
-   <div class="game-card">
-    <header class="game-header">
-     <svg width="120" height="120" viewbox="0 0 120 120" style="margin: 0 auto 20px auto; display: block;"><circle cx="60" cy="60" r="55" fill="#ffeaa7" opacity="0.3" /> <circle cx="60" cy="60" r="45" fill="#fdcb6e" opacity="0.5" /> <text x="60" y="75" font-size="50" text-anchor="middle" fill="#e17055">
-       ABC
-      </text> <circle cx="30" cy="30" r="8" fill="#74b9ff" /> <circle cx="90" cy="30" r="8" fill="#fd79a8" /> <circle cx="30" cy="90" r="8" fill="#55efc4" /> <circle cx="90" cy="90" r="8" fill="#a29bfe" />
-     </svg>
-     <h1 class="game-title" id="gameTitle">🎮 เกมเติมตัวอักษรภาษาอังกฤษ</h1>
-     <p class="instructions" id="instructions">กรอกตัวอักษรที่หายไปให้ครบถ้วน (10 วินาที/ข้อ)</p>
-    </header>
-    <div id="gameContent">
-     <div class="score-board">
-      <div class="category-badge" id="categoryBadge"><span id="categoryEmoji">🌱</span> <span id="categoryName">Environment</span>
-      </div>
-      <div class="timer-display"><span class="timer-icon">⏱️</span> <span id="timerValue">10s</span>
-      </div>
-      <div class="score-display"><span id="scoreLabel">คะแนน:</span> <span id="scoreValue">0</span>/<span id="totalQuestions">20</span>
-      </div>
-     </div>
-     <div class="word-display">
-      <svg id="hintImage" class="hint-image" width="150" height="150" viewbox="0 0 150 150"></svg>
-      <div class="word-letters" id="wordLetters"></div>
-     </div>
-     <div class="feedback-message" id="feedbackMessage"></div>
-     <div class="button-group"><button class="game-button check-button" id="checkButton">✓ ตรวจสอบคำตอบ</button> <button class="game-button next-button" id="nextButton" style="display: none;">→ คำถัดไป</button>
-     </div>
-    </div>
-    <div class="completion-screen" id="completionScreen">
-     <div class="completion-icon">
-      🎉
-     </div>
-     <div class="completion-title">
-      ยินดีด้วย! เล่นจบแล้ว
-     </div>
-     <div class="final-score">
-      คะแนนของคุณ: <span id="finalScore">0</span>/20
-     </div>
-     <div class="final-score">
-      ⏱️ เวลาที่ใช้: <span id="finalTime">0</span>
-     </div>
-    </div>
-   </div>
-  </main>
+ <body class="w-full h-full m-0 p-0">
+  <div id="app" class="w-full min-h-full"></div>
   <script>
     const defaultConfig = {
-      game_title: "🎮 เกมเติมตัวอักษรภาษาอังกฤษ",
-      instructions_text: "กรอกตัวอักษรที่หายไปให้ครบถ้วน (10 วินาที/ข้อ)",
-      check_button_text: "✓ ตรวจสอบคำตอบ",
-      next_button_text: "→ คำถัดไป",
-      correct_message: "🎉 ถูกต้อง! เยี่ยมมาก!",
-      incorrect_message: "❌ ลองใหม่อีกครั้ง",
-      score_label: "คะแนน:"
+      background_color: "#fff5f7",
+      surface_color: "#fffbfc",
+      text_color: "#4a3448",
+      primary_action_color: "#ff9ebb",
+      secondary_action_color: "#b4a7ff",
+      font_family: "Sarabun",
+      font_size: 16,
+      app_title: "My Baby Journey 👶",
+      subtitle: "ติดตามพัฒนาการลูกน้อย 0-3 ปี ตามมาตรฐานกรมอนามัย"
     };
 
-    const vocabularyData = [
-      { category: "🌱 Environment", emoji: "🌱", words: [
-        { word: "waterfall", pattern: "w_t_rf_ll", missing: "aae", 
-          hint: `<defs><linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#74b9ff;stop-opacity:1" /><stop offset="100%" style="stop-color:#0984e3;stop-opacity:1" /></linearGradient></defs><rect x="30" y="20" width="40" height="15" rx="5" fill="#8B4513"/><rect x="80" y="20" width="40" height="15" rx="5" fill="#8B4513"/><path d="M 50 35 Q 55 40 60 50 Q 65 60 70 80 Q 72 90 75 110" stroke="url(#waterGrad)" stroke-width="8" fill="none" opacity="0.7"/><path d="M 100 35 Q 105 45 108 60 Q 110 75 112 95 Q 113 105 115 120" stroke="url(#waterGrad)" stroke-width="6" fill="none" opacity="0.6"/><ellipse cx="75" cy="125" rx="35" ry="8" fill="#74b9ff" opacity="0.4"/><circle cx="60" cy="122" r="3" fill="#ffffff" opacity="0.8"/><circle cx="85" cy="123" r="2" fill="#ffffff" opacity="0.8"/>` 
-        },
-        { word: "earthquake", pattern: "_arthq__ke", missing: "euae", 
-          hint: `<rect x="20" y="90" width="110" height="30" fill="#8B4513" opacity="0.6"/><path d="M 30 90 L 35 70 L 45 90" fill="#A0522D"/><path d="M 50 90 L 58 65 L 70 90" fill="#A0522D"/><path d="M 75 90 L 82 75 L 95 90" fill="#A0522D"/><path d="M 100 90 L 108 70 L 120 90" fill="#A0522D"/><path d="M 20 100 Q 40 95 60 100 T 100 100 T 130 100" stroke="#ff7675" stroke-width="4" fill="none"/><path d="M 25 105 Q 45 110 65 105 T 105 105 T 135 105" stroke="#d63031" stroke-width="3" fill="none"/><circle cx="50" cy="50" r="4" fill="#fdcb6e" opacity="0.8"><animate attributeName="r" values="4;7;4" dur="1s" repeatCount="indefinite"/></circle><circle cx="90" cy="55" r="3" fill="#fdcb6e" opacity="0.7"><animate attributeName="r" values="3;6;3" dur="1.2s" repeatCount="indefinite"/></circle>` 
-        },
-        { word: "pollution", pattern: "p_ll_ti_n", missing: "ouo", 
-          hint: `<ellipse cx="75" cy="110" rx="45" ry="12" fill="#74b9ff" opacity="0.4"/><rect x="50" y="70" width="50" height="40" fill="#95a5a6" opacity="0.7"/><rect x="60" y="50" width="30" height="25" fill="#7f8c8d" opacity="0.8"/><circle cx="75" cy="35" r="15" fill="#636e72" opacity="0.5"/><path d="M 70 35 Q 68 25 65 15" stroke="#2d3436" stroke-width="3" fill="none"/><path d="M 80 35 Q 82 25 85 15" stroke="#2d3436" stroke-width="3" fill="none"/><circle cx="40" cy="40" r="8" fill="#b2bec3" opacity="0.6"><animate attributeName="cy" values="40;25;40" dur="3s" repeatCount="indefinite"/></circle><circle cx="110" cy="45" r="6" fill="#b2bec3" opacity="0.5"><animate attributeName="cy" values="45;30;45" dur="3.5s" repeatCount="indefinite"/></circle><circle cx="55" cy="35" r="7" fill="#dfe6e9" opacity="0.6"><animate attributeName="cy" values="35;20;35" dur="2.8s" repeatCount="indefinite"/></circle>` 
-        },
-        { word: "wildlife", pattern: "w_ldl_f_", missing: "iie", 
-          hint: `<ellipse cx="75" cy="120" rx="50" ry="10" fill="#55efc4" opacity="0.3"/><rect x="65" y="95" width="8" height="25" fill="#8B4513"/><circle cx="55" cy="95" r="18" fill="#27ae60" opacity="0.6"/><circle cx="75" cy="90" r="22" fill="#27ae60" opacity="0.6"/><circle cx="95" cy="95" r="18" fill="#27ae60" opacity="0.6"/><circle cx="50" cy="65" r="12" fill="#f39c12" opacity="0.8"/><circle cx="48" cy="63" r="3" fill="#2d3436"/><circle cx="54" cy="63" r="3" fill="#2d3436"/><path d="M 45 58 L 40 52 M 55 58 L 60 52" stroke="#f39c12" stroke-width="2"/><ellipse cx="50" cy="72" rx="5" ry="3" fill="#2d3436" opacity="0.6"/><circle cx="100" cy="70" r="8" fill="#e74c3c" opacity="0.7"/><path d="M 102 68 L 108 65 L 110 70 L 106 72 Z" fill="#c0392b" opacity="0.8"/><circle cx="98" cy="68" r="2" fill="#2d3436"/>` 
-        },
-        { word: "recycle", pattern: "r_c_cl_", missing: "eye", 
-          hint: `<circle cx="75" cy="75" r="45" fill="#55efc4" opacity="0.2"/><path d="M 75 40 L 85 60 L 65 60 Z" fill="#27ae60" opacity="0.8"/><text x="75" y="58" font-size="16" text-anchor="middle" fill="#fff" font-weight="bold">1</text><path d="M 110 90 L 100 75 L 115 70 Z" fill="#27ae60" opacity="0.8" transform="rotate(120 75 75)"/><text x="105" y="95" font-size="16" text-anchor="middle" fill="#fff" font-weight="bold">2</text><path d="M 40 90 L 55 85 L 45 70 Z" fill="#27ae60" opacity="0.8" transform="rotate(240 75 75)"/><text x="45" y="95" font-size="16" text-anchor="middle" fill="#fff" font-weight="bold">3</text><path d="M 75 50 Q 95 55 105 75 M 105 85 Q 95 105 75 110 M 65 110 Q 45 105 40 85" stroke="#27ae60" stroke-width="4" fill="none" opacity="0.6"/>` 
-        }
-      ]},
-      { category: "🚗 Transportation", emoji: "🚗", words: [
-        { word: "pedestrian", pattern: "p_d_str__n", missing: "eeia", 
-          hint: `<ellipse cx="75" cy="125" rx="40" ry="8" fill="#dfe6e9" opacity="0.4"/><circle cx="75" cy="45" r="12" fill="#ffeaa7" opacity="0.9"/><ellipse cx="75" cy="65" rx="15" ry="20" fill="#74b9ff" opacity="0.8"/><rect x="68" y="75" width="6" height="25" fill="#0984e3" opacity="0.8"/><rect x="76" y="75" width="6" height="25" fill="#0984e3" opacity="0.8"/><rect x="60" y="60" width="8" height="18" fill="#74b9ff" opacity="0.8" transform="rotate(-30 64 60)"/><rect x="82" y="60" width="8" height="18" fill="#74b9ff" opacity="0.8" transform="rotate(30 86 60)"/><path d="M 68 100 L 60 115 M 82 100 L 90 115" stroke="#0984e3" stroke-width="6" stroke-linecap="round"/><rect x="30" y="120" width="90" height="5" fill="#95a5a6" opacity="0.5"/><rect x="35" y="110" width="5" height="15" fill="#7f8c8d" opacity="0.6"/><rect x="85" y="110" width="5" height="15" fill="#7f8c8d" opacity="0.6"/>` 
-        },
-        { word: "departure", pattern: "d_p_rt_r_", missing: "eaue", 
-          hint: `<rect x="30" y="90" width="90" height="25" rx="5" fill="#74b9ff" opacity="0.7"/><rect x="35" y="95" width="15" height="12" fill="#dfe6e9" opacity="0.8"/><rect x="55" y="95" width="15" height="12" fill="#dfe6e9" opacity="0.8"/><rect x="75" y="95" width="15" height="12" fill="#dfe6e9" opacity="0.8"/><rect x="95" y="95" width="15" height="12" fill="#dfe6e9" opacity="0.8"/><circle cx="50" cy="120" r="6" fill="#2d3436"/><circle cx="100" cy="120" r="6" fill="#2d3436"/><path d="M 120 75 L 135 90 L 120 105" fill="#fdcb6e" opacity="0.8"><animateTransform attributeName="transform" type="translate" values="0,0; 10,0; 0,0" dur="1.5s" repeatCount="indefinite"/></path><path d="M 110 75 L 125 90 L 110 105" fill="#fdcb6e" opacity="0.6"><animateTransform attributeName="transform" type="translate" values="0,0; 10,0; 0,0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/></path>` 
-        },
-        { word: "destination", pattern: "d_st_n_ti_n", missing: "eiao", 
-          hint: `<rect x="40" y="50" width="70" height="50" rx="3" fill="#fd79a8" opacity="0.6"/><path d="M 40 50 L 75 25 L 110 50" fill="#e17055" opacity="0.7"/><rect x="65" y="70" width="20" height="30" fill="#8B4513" opacity="0.7"/><rect x="50" y="65" width="12" height="12" fill="#74b9ff" opacity="0.7"/><rect x="88" y="65" width="12" height="12" fill="#74b9ff" opacity="0.7"/><circle cx="75" cy="20" r="8" fill="#fdcb6e" opacity="0.8"><animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/></circle><path d="M 75 20 L 73 10 L 75 12 L 77 10 Z" fill="#fdcb6e" opacity="0.9"><animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" repeatCount="indefinite"/></path><ellipse cx="75" cy="110" rx="35" ry="8" fill="#55efc4" opacity="0.3"/>` 
-        },
-        { word: "schedule", pattern: "sc__d_l_", missing: "heue", 
-          hint: `<rect x="40" y="30" width="70" height="90" rx="5" fill="#fff" opacity="0.9" stroke="#74b9ff" stroke-width="3"/><circle cx="55" cy="45" r="3" fill="#e17055"/><circle cx="75" cy="45" r="3" fill="#e17055"/><circle cx="95" cy="45" r="3" fill="#e17055"/><rect x="48" y="60" width="54" height="8" rx="2" fill="#dfe6e9" opacity="0.6"/><rect x="48" y="75" width="54" height="8" rx="2" fill="#74b9ff" opacity="0.7"/><rect x="48" y="90" width="54" height="8" rx="2" fill="#dfe6e9" opacity="0.6"/><rect x="48" y="105" width="30" height="8" rx="2" fill="#dfe6e9" opacity="0.6"/><circle cx="120" cy="40" r="18" fill="#fdcb6e" opacity="0.3"/><rect x="118" y="30" width="4" height="12" fill="#e17055" opacity="0.8"><animateTransform attributeName="transform" type="rotate" values="0 120 40; 360 120 40" dur="4s" repeatCount="indefinite"/></rect><rect x="118" y="30" width="3" height="16" fill="#2d3436" opacity="0.8"><animateTransform attributeName="transform" type="rotate" values="90 120 40; 450 120 40" dur="0.5s" repeatCount="indefinite"/></rect>` 
-        },
-        { word: "highway", pattern: "h_gh_a_", missing: "iwy", 
-          hint: `<rect x="30" y="60" width="90" height="50" fill="#636e72" opacity="0.7"/><rect x="35" y="80" width="80" height="8" fill="#f1c40f" opacity="0.8"/><rect x="40" y="84" width="10" height="3" fill="#fff" opacity="0.9"/><rect x="55" y="84" width="10" height="3" fill="#fff" opacity="0.9"/><rect x="70" y="84" width="10" height="3" fill="#fff" opacity="0.9"/><rect x="85" y="84" width="10" height="3" fill="#fff" opacity="0.9"/><rect x="100" y="84" width="10" height="3" fill="#fff" opacity="0.9"/><rect x="50" y="65" width="20" height="12" rx="2" fill="#e74c3c" opacity="0.8"/><rect x="47" y="72" width="4" height="5" fill="#fff" opacity="0.3"/><rect x="66" y="72" width="4" height="5" fill="#fff" opacity="0.3"/><circle cx="53" cy="78" r="2" fill="#2d3436"/><circle cx="67" cy="78" r="2" fill="#2d3436"/><path d="M 70 65 L 80 60 L 90 65 L 85 68 L 75 68 Z" fill="#74b9ff" opacity="0.7"/><ellipse cx="82" cy="72" rx="3" ry="2" fill="#dfe6e9" opacity="0.6"/>` 
-        }
-      ]},
-      { category: "💻 Technology", emoji: "💻", words: [
-        { word: "device", pattern: "d_v_c_", missing: "eie", 
-          hint: `<rect x="45" y="40" width="60" height="80" rx="8" fill="#2d3436" opacity="0.8"/><rect x="50" y="45" width="50" height="60" rx="3" fill="#74b9ff" opacity="0.3"/><circle cx="75" cy="113" r="5" fill="#dfe6e9" opacity="0.6"/><rect x="60" y="55" width="30" height="5" rx="2" fill="#636e72" opacity="0.4"/><circle cx="70" cy="70" r="8" fill="#fdcb6e" opacity="0.6"/><rect x="80" y="75" width="15" height="3" rx="1" fill="#95a5a6" opacity="0.5"/><rect x="80" y="82" width="12" height="3" rx="1" fill="#95a5a6" opacity="0.5"/><rect x="80" y="89" width="18" height="3" rx="1" fill="#95a5a6" opacity="0.5"/><circle cx="58" cy="85" r="3" fill="#e74c3c" opacity="0.6"/>` 
-        },
-        { word: "upload", pattern: "_pl__d", missing: "uoa", 
-          hint: `<rect x="50" y="80" width="50" height="30" rx="3" fill="#dfe6e9" opacity="0.7"/><rect x="45" y="105" width="60" height="5" rx="2" fill="#95a5a6" opacity="0.6"/><path d="M 75 75 L 75 45" stroke="#74b9ff" stroke-width="6" stroke-linecap="round"/><path d="M 75 45 L 65 55 M 75 45 L 85 55" stroke="#74b9ff" stroke-width="5" stroke-linecap="round"/><circle cx="75" cy="70" r="3" fill="#0984e3" opacity="0.8"><animate attributeName="cy" values="70;45;45" dur="1.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0;0" dur="1.5s" repeatCount="indefinite"/></circle><circle cx="75" cy="85" r="3" fill="#0984e3" opacity="0.8"><animate attributeName="cy" values="85;45;45" dur="1.5s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0;0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/></circle>` 
-        },
-        { word: "password", pattern: "p_ssw_r_", missing: "aod", 
-          hint: `<rect x="35" y="70" width="80" height="40" rx="5" fill="#636e72" opacity="0.7"/><rect x="65" y="50" width="20" height="25" rx="10" fill="none" stroke="#95a5a6" stroke-width="6" opacity="0.8"/><circle cx="75" cy="90" r="6" fill="#f1c40f" opacity="0.8"/><rect x="73" y="95" width="4" height="10" rx="2" fill="#f1c40f" opacity="0.8"/><circle cx="50" cy="88" r="3" fill="#fff" opacity="0.4"/><circle cx="60" cy="92" r="3" fill="#fff" opacity="0.4"/><circle cx="90" cy="88" r="3" fill="#fff" opacity="0.4"/><circle cx="100" cy="92" r="3" fill="#fff" opacity="0.4"/>` 
-        },
-        { word: "connection", pattern: "c_nn_ct__n", missing: "oeio", 
-          hint: `<circle cx="45" cy="75" r="18" fill="#74b9ff" opacity="0.6" stroke="#0984e3" stroke-width="3"/><circle cx="105" cy="75" r="18" fill="#74b9ff" opacity="0.6" stroke="#0984e3" stroke-width="3"/><path d="M 63 75 L 87 75" stroke="#0984e3" stroke-width="4" stroke-dasharray="5,3"/><circle cx="45" cy="75" r="6" fill="#0984e3" opacity="0.8"/><circle cx="105" cy="75" r="6" fill="#0984e3" opacity="0.8"/><circle cx="75" cy="75" r="5" fill="#fdcb6e" opacity="0.8"><animate attributeName="r" values="5;8;5" dur="1.5s" repeatCount="indefinite"/></circle><path d="M 55 65 Q 65 60 75 65" stroke="#55efc4" stroke-width="2" fill="none" opacity="0.6"><animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/></path><path d="M 95 65 Q 85 60 75 65" stroke="#55efc4" stroke-width="2" fill="none" opacity="0.6"><animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" begin="1s" repeatCount="indefinite"/></path>` 
-        },
-        { word: "digital", pattern: "d_g_t_l", missing: "iai", 
-          hint: `<rect x="40" y="50" width="70" height="50" rx="3" fill="#2d3436" opacity="0.8"/><rect x="45" y="55" width="60" height="35" fill="#0984e3" opacity="0.3"/><text x="52" y="78" font-size="24" fill="#55efc4" font-weight="bold" font-family="monospace">101</text><text x="80" y="78" font-size="24" fill="#fdcb6e" font-weight="bold" font-family="monospace">010</text><circle cx="100" cy="65" r="3" fill="#e74c3c" opacity="0.8"><animate attributeName="opacity" values="0.8;0.2;0.8" dur="1s" repeatCount="indefinite"/></circle><rect x="55" y="92" width="8" height="3" rx="1" fill="#95a5a6" opacity="0.6"/><rect x="67" y="92" width="8" height="3" rx="1" fill="#95a5a6" opacity="0.6"/><rect x="79" y="92" width="8" height="3" rx="1" fill="#95a5a6" opacity="0.6"/>` 
-        }
-      ]},
-      { category: "🔧 Everyday & Academic", emoji: "🔧", words: [
-        { word: "flashlight", pattern: "fl_shl_gh_", missing: "ait", 
-          hint: `<rect x="55" y="70" width="40" height="50" rx="5" fill="#636e72" opacity="0.8"/><circle cx="75" cy="65" r="15" fill="#f1c40f" opacity="0.3"/><circle cx="75" cy="65" r="10" fill="#fff" opacity="0.4"/><circle cx="75" cy="65" r="6" fill="#fdcb6e" opacity="0.9"><animate attributeName="opacity" values="0.9;0.5;0.9" dur="1.5s" repeatCount="indefinite"/></circle><path d="M 75 50 L 70 35 L 80 35 Z" fill="#f1c40f" opacity="0.6"><animate attributeName="opacity" values="0.6;0.3;0.6" dur="1.5s" repeatCount="indefinite"/></path><path d="M 75 50 L 68 30 L 82 30 Z" fill="#f1c40f" opacity="0.4"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="1.5s" repeatCount="indefinite"/></path><rect x="70" y="115" width="10" height="5" rx="1" fill="#95a5a6" opacity="0.5"/>` 
-        },
-        { word: "backpack", pattern: "b_ckp_c_", missing: "aak", 
-          hint: `<rect x="50" y="50" width="50" height="60" rx="8" fill="#e74c3c" opacity="0.8"/><rect x="55" y="55" width="40" height="15" rx="3" fill="#c0392b" opacity="0.7"/><circle cx="75" cy="80" r="8" fill="#f39c12" opacity="0.7"/><rect x="72" y="90" width="6" height="20" rx="3" fill="#f39c12" opacity="0.6"/><path d="M 60 50 Q 58 40 60 35 L 60 25" stroke="#c0392b" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M 90 50 Q 92 40 90 35 L 90 25" stroke="#c0392b" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="45" y="65" width="8" height="25" rx="4" fill="#c0392b" opacity="0.6"/><rect x="97" y="65" width="8" height="25" rx="4" fill="#c0392b" opacity="0.6"/>` 
-        },
-        { word: "calculator", pattern: "c_lc_l_t_r", missing: "auao", 
-          hint: `<rect x="45" y="35" width="60" height="85" rx="5" fill="#2d3436" opacity="0.9"/><rect x="52" y="42" width="46" height="20" rx="2" fill="#55efc4" opacity="0.4"/><text x="75" y="57" font-size="14" text-anchor="middle" fill="#2d3436" font-weight="bold">12345</text><circle cx="62" cy="75" r="5" fill="#dfe6e9" opacity="0.8"/><circle cx="75" cy="75" r="5" fill="#dfe6e9" opacity="0.8"/><circle cx="88" cy="75" r="5" fill="#dfe6e9" opacity="0.8"/><circle cx="62" cy="88" r="5" fill="#dfe6e9" opacity="0.8"/><circle cx="75" cy="88" r="5" fill="#dfe6e9" opacity="0.8"/><circle cx="88" cy="88" r="5" fill="#dfe6e9" opacity="0.8"/><circle cx="62" cy="101" r="5" fill="#dfe6e9" opacity="0.8"/><circle cx="75" cy="101" r="5" fill="#dfe6e9" opacity="0.8"/><rect x="83" y="96" width="10" height="10" rx="2" fill="#74b9ff" opacity="0.8"/>` 
-        },
-        { word: "dictionary", pattern: "d_ct__n_ry", missing: "iioa", 
-          hint: `<rect x="45" y="40" width="60" height="70" rx="3" fill="#e17055" opacity="0.8"/><rect x="48" y="40" width="54" height="70" fill="#fff" opacity="0.9"/><path d="M 75 40 L 75 110" stroke="#e17055" stroke-width="2" opacity="0.3"/><text x="63" y="62" font-size="12" fill="#2d3436" font-family="serif">A</text><text x="85" y="62" font-size="10" fill="#636e72" font-family="serif">apple</text><text x="63" y="75" font-size="12" fill="#2d3436" font-family="serif">B</text><text x="85" y="75" font-size="10" fill="#636e72" font-family="serif">book</text><text x="63" y="88" font-size="12" fill="#2d3436" font-family="serif">C</text><text x="85" y="88" font-size="10" fill="#636e72" font-family="serif">cat</text><rect x="105" y="45" width="3" height="60" rx="1" fill="#fab1a0" opacity="0.6"/>` 
-        },
-        { word: "microscope", pattern: "m_cr_sc_p_", missing: "iooe", 
-          hint: `<ellipse cx="75" cy="115" rx="35" ry="8" fill="#dfe6e9" opacity="0.5"/><rect x="70" y="85" width="10" height="30" fill="#95a5a6" opacity="0.8"/><circle cx="75" cy="75" r="20" fill="#74b9ff" opacity="0.3" stroke="#0984e3" stroke-width="3"/><circle cx="75" cy="75" r="12" fill="#55efc4" opacity="0.5"/><rect x="70" y="45" width="10" height="15" fill="#636e72" opacity="0.8"/><path d="M 65 45 L 60 35 L 70 35 Z" fill="#7f8c8d" opacity="0.7"/><path d="M 85 45 L 90 35 L 80 35 Z" fill="#7f8c8d" opacity="0.7"/><circle cx="75" cy="30" r="5" fill="#fdcb6e" opacity="0.8"/><rect x="55" y="85" width="8" height="3" rx="1" fill="#636e72" opacity="0.6"/><rect x="87" y="85" width="8" height="3" rx="1" fill="#636e72" opacity="0.6"/>` 
-        }
-      ]}
+    const flashcardsData = [
+      // 0-6 เดือน
+      {
+        id: "fc-0-6-1",
+        ageRange: "0-6 เดือน",
+        category: "👀 การมองเห็น",
+        activity: "บัตรภาพขาวดำ",
+        description: "แสดงบัตรภาพลายขาวดำที่มีความ contrast สูง เช่น จุด เส้น หน้ายิ้ม เพื่อกระตุ้นกา�����มองเห็นของทารก",
+        benefit: "กระตุ้นการพัฒนาการมองเห็น สมองส่วนการประมวลผลภาพ",
+        howTo: "ถือบัตรห่างจากหน้าเด็ก 20-30 ซม. ค่อยๆ เคลื่อนไหวช้าๆ"
+      },
+      {
+        id: "fc-0-6-2",
+        ageRange: "0-6 เดือน",
+        category: "👂 การได้ยิน-ภาษา",
+        activity: "บัตรภาพพร้อมเสียง",
+        description: "แสดงภาพสัตว์หรือสิ่งของพร้อมพูดชื่อเสียง เช่น 'หมา โฮ่ง โฮ่ง' 'แมว เหมียว เหมียว'",
+        benefit: "กระตุ้นการได้ยินและเชื่อมโยงเสียงกับภาพ",
+        howTo: "พูดชื่อพร้อมเลียนเสียงซ้ำๆ ด้วยน้ำเสียงที่สนุกสนาน"
+      },
+      // 7-12 เดือน
+      {
+        id: "fc-7-12-1",
+        ageRange: "7-12 เดือน",
+        category: "🧠 การรับรู้",
+        activity: "บัต���คำง่ายๆ",
+        description: "แสดงบัตรคำง่ายๆ พร้อมภาพ เช่น 'แม่' 'พ่อ' 'นม' 'ปุ๊บปั๊บ' และพูดคำนั้นซ้ำๆ",
+        benefit: "ส่งเสริมการเรียนรู้คำศัพท์แรกๆ",
+        howTo: "แสดงบัตร 3-5 วินาที พูดคำชัดเจน 2-3 ครั้ง"
+      },
+      {
+        id: "fc-7-12-2",
+        ageRange: "7-12 เดือน",
+        category: "👀 การมองเห็น",
+        activity: "บัตรภาพสีสดใส",
+        description: "แสดงภาพวัตถุธรรมดาที่เด็กเห็นทุกวัน เช่น ลูกบอล ขวดนม ตุ๊กตา ในสีสดใส",
+        benefit: "จดจำวัตถุและสีต่างๆ พัฒนาคว���มจำภาพ",
+        howTo: "ชี้ภาพและให้เด็กลองจับหรือชี้ตาม"
+      },
+      // 13-18 เดือน
+      {
+        id: "fc-13-18-1",
+        ageRange: "13-18 เดือน",
+        category: "🎨 ศิลปะ-สร้างสรรค์",
+        activity: "บัตรภาพสัตว์",
+        description: "แสดงภาพสัตว์ต่างๆ เช่น หมา แมว ช้าง นก พร้อมออกเสียงสัตว์",
+        benefit: "เรียนรู้ชื่อสัตว์ เสียงสัตว์ กระตุ้นจินตนาการ",
+        howTo: "ให้เด็กลองเลียนเสียงตาม ชี้ส่วนต่างๆ ของสัตว์"
+      },
+      {
+        id: "fc-13-18-2",
+        ageRange: "13-18 เดือน",
+        category: "🔢 ตัวเลข",
+        activity: "บัตรนับเลข 1-5",
+        description: "แสดงบัตรตัวเลข 1-5 พร้อมภาพวัตถุจำนวนตามนั้น เช่น 1 ล��กบอล, 2 แอปเปิ้ล",
+        benefit: "เริ่มรู้จักตัวเลขและแนวคิดเรื่องจำนวน",
+        howTo: "นับพร้อมชี้ภาพแต่ละตัว ให้เด็กพูดตาม"
+      },
+      // 19-24 เดือน
+      {
+        id: "fc-19-24-1",
+        ageRange: "19-24 เดือน",
+        category: "🎨 สี-รูปทรง",
+        activity: "บัตรสีพื้นฐาน",
+        description: "แสดงบัตรสีพื้นฐาน: แดง เหลือง น้ำเงิน เขียว พร้อมวัตถุสีนั้นๆ",
+        benefit: "จำแนกสีได้ เชื่อมโยงสีกับวัตถุ",
+        howTo: "ให้เด็กหยิบของเล่นสีเดียวกับบัตร"
+      },
+      {
+        id: "fc-19-24-2",
+        ageRange: "19-24 เดือน",
+        category: "📖 ภาษา",
+        activity: "บัตรคำ 2 คำ",
+        description: "แสดงบัตรวลีง่ายๆ เช่น 'กิน ข้าว' 'นอน หลับ' 'ไป เล่น' พร้อมภาพประกอบ",
+        benefit: "พัฒนาการพูดประโยค 2 คำ",
+        howTo: "แสดงบัตรในสถานการณ์จริง เช่น ก่อนกินข้าว"
+      },
+      {
+        id: "fc-19-24-3",
+        ageRange: "19-24 เดือน",
+        category: "😊 อารมณ์",
+        activity: "บัตรแสดงอารมณ์",
+        description: "แสดงภาพใบหน้าอารมณ์ต่างๆ: ยิ้ม เศร้า โกรธ แปลกใจ",
+        benefit: "เรียนรู้การรับรู้และแสดงอารมณ์",
+        howTo: "ทำสีหน้าตามบัตร ถามว่า 'รู้สึกยังไง?'"
+      },
+      // 2-2.5 ปี
+      {
+        id: "fc-25-30-1",
+        ageRange: "2-2.5 ปี",
+        category: "🔤 ตัวอักษร",
+        activity: "บัตรตัวอักษร ก-ฮ",
+        description: "แสดงบัตรตัวอักษรไทย พร้อมภาพคำที่ขึ้นต้นด้วยตัวนั้น เช่น ก-ไก่",
+        benefit: "เริ่มรู้จักตัวอักษรไทย",
+        howTo: "ชี้ตัวอักษร พูดชื่อตัวและคำ ให้เด็กพูดตาม"
+      },
+      {
+        id: "fc-25-30-2",
+        ageRange: "2-2.5 ปี",
+        category: "🔢 ตัวเลข",
+        activity: "บัตรนับเลข 1-10",
+        description: "บัตรตัวเลข 1-10 พร้อมภาพวัตถุนับได้",
+        benefit: "นับเลขได้คล่อง จำตัวเลขได้",
+        howTo: "นับช้าๆ ให้เด็กนับตาม จับมือชี้แต่ละตัว"
+      },
+      {
+        id: "fc-25-30-3",
+        ageRange: "2-2.5 ปี",
+        category: "🧩 การแก้ปัญหา",
+        activity: "บัตรจับคู่",
+        description: "บัตรภาพที่เป็นคู่กัน เช่น รองเท้าซ้าย-ขวา, ถุงเท้าคู่",
+        benefit: "พัฒนาการคิดเชื่อมโยง การแก้ปัญหา",
+        howTo: "กางบั��รหลายใบ ให้เด็กหาภาพที่เข้าคู่กัน"
+      },
+      // 2.5-3 ปี
+      {
+        id: "fc-31-36-1",
+        ageRange: "2.5-3 ปี",
+        category: "🔤 ภาษา",
+        activity: "บัตรคำศัพท์ขั้นสูง",
+        description: "แสดงคำศัพท์ที่ซับซ้อน เช่น 'พาหนะ' 'ผลไม้' 'อาชีพ' พร้อมหมวดหมู่",
+        benefit: "ขยายคลังคำศัพท์ จัดหมวดหมู่ได้",
+        howTo: "จัดกลุ่มบัตรตามหมวด เช่น สัตว์บก สัตว์น้ำ"
+      },
+      {
+        id: "fc-31-36-2",
+        ageRange: "2.5-3 ปี",
+        category: "🎨 รูปทรง",
+        activity: "บัตรรูปทรงเรขาคณิต",
+        description: "แสดงรูปทรง: วงกลม สี่เหลี่ยม สามเหลี่ยม ดาว หัวใจ",
+        benefit: "จำแนกรูปทรงได้ เข้าใจแนวคิดทางคณิตศาสตร์",
+        howTo: "ให้เด็กหาของเล่นที่เป็นรูปทรงเดียวกัน"
+      },
+      {
+        id: "fc-31-36-3",
+        ageRange: "2.5-3 ปี",
+        category: "📖 เรื่องราว",
+        activity: "บัตรลำดับเหตุการณ์",
+        description: "บัตร 3-4 ภาพที่เล่าเรื่องราวต่อเนื่อง เช่น ตื่นนอน แปรงฟัน กินข้าว",
+        benefit: "พัฒนาการคิดลำดับเหตุผล เล่าเรื่อง",
+        howTo: "ให้เด็กเรียงบัตรตามลำดับ แล้วเล่าเรื่อง"
+      },
+      {
+        id: "fc-31-36-4",
+        ageRange: "2.5-3 ปี",
+        category: "🧠 ความจำ",
+        activity: "เกมจำภาพ (Memory Game)",
+        description: "บัตรคู่เหมือนกัน คว่ำหงาย ให้เด็กจับคู่จำภาพ",
+        benefit: "พัฒนาความจำ สมาธิ การแก้ปัญหา",
+        howTo: "เริ่มจาก 4-6 คู่ เพิ่มความยากค่อยๆ"
+      }
     ];
 
-    let currentCategoryIndex = 0;
-    let currentWordIndex = 0;
-    let score = 0;
-    let totalWords = 0;
-    let currentAnswers = [];
-    let timerInterval = null;
-    let remainingSeconds = 10;
-    let totalTime = 0;
-
-    vocabularyData.forEach(cat => totalWords += cat.words.length);
-
-    function startTimer() {
-      remainingSeconds = 10;
-      updateTimerDisplay();
-      
-      if (timerInterval) {
-        clearInterval(timerInterval);
+    const vaccinesData = [
+      // แรกเกิด
+      {
+        id: "birth-bcg",
+        ageRange: "แรกเกิด",
+        vaccineName: "BCG (วัณโรค)",
+        description: "ป้องกันวัณโรครุนแรง ฉีดที่ต้นแขนซ้า���",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "birth-hepb1",
+        ageRange: "แรกเกิด",
+        vaccineName: "HB 1 (ตับอักเสบบี)",
+        description: "ป้องกันตับอักเสบบี เข็มที่ 1 ฉีดภายใน 24 ชม.",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      // 2 เดือน
+      {
+        id: "2m-dtap1",
+        ageRange: "2 เดือน",
+        vaccineName: "DTaP-IPV-Hib-HB 1",
+        description: "คอตีบ-บาดทะยัก-ไอกรน-โปลิโอ-ฮิบ-ตับอักเสบบี (6 in 1) เข็มแรก",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "2m-rota1",
+        ageRange: "2 เดือน",
+        vaccineName: "Rotavirus 1",
+        description: "ป้องกันท้องเสียจากไวรัสโรต้า รับประทาน (ไม่บังคับ)",
+        importance: "ปานกลาง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "2m-pcv1",
+        ageRange: "2 เดือน",
+        vaccineName: "PCV 1",
+        description: "ป้องกันปอดบวม เยื่อหุ้มสมองอักเสบจากนิวโมค็อกคัส",
+        importance: "สูง",
+        reference: "กรมควบค���มโรค"
+      },
+      // 4 เดือน
+      {
+        id: "4m-dtap2",
+        ageRange: "4 เดือน",
+        vaccineName: "DTaP-IPV-Hib-HB 2",
+        description: "คอตีบ-บาดทะยัก-ไอกรน-โปลิโอ-ฮิบ-ตับอักเสบบี (6 in 1) เข็มที่ 2",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "4m-rota2",
+        ageRange: "4 เดือน",
+        vaccineName: "Rotavirus 2",
+        description: "ป้องกันท้องเสียจากไวรัสโรต้า เข็มที่ 2 (ไม่บังคับ)",
+        importance: "ปานกลาง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "4m-pcv2",
+        ageRange: "4 เดือน",
+        vaccineName: "PCV 2",
+        description: "ป้องกัน��อดบวม เยื่อหุ้มสมองอักเสบ เข็มที่ 2",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      // 6 เดือน
+      {
+        id: "6m-dtap3",
+        ageRange: "6 เดือน",
+        vaccineName: "DTaP-IPV-Hib-HB 3",
+        description: "คอตีบ-บาดทะยัก-ไอกรน-โปลิโอ-ฮิบ-ตับอักเสบบี (6 in 1) เข็มที่ 3",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "6m-rota3",
+        ageRange: "6 เดือน",
+        vaccineName: "Rotavirus 3",
+        description: "ป้องกันท้องเสียจากไวรัสโรต้า เข็มที่ 3 (ไม่บังคับ)",
+        importance: "ปานกลาง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "6m-pcv3",
+        ageRange: "6 เดือน",
+        vaccineName: "PCV 3",
+        description: "ป้องกันปอดบวม เยื่อหุ้มสมองอักเสบ เข็มที่ 3",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "6m-flu1",
+        ageRange: "6 เดือน",
+        vaccineName: "Influenza 1",
+        description: "ป้องกันไข้หวัดใหญ่ (ฉีดซ้ำทุกปี)",
+        importance: "ปานกลาง",
+        reference: "กรมควบคุมโรค"
+      },
+      // 9 เดือน
+      {
+        id: "9m-mmr1",
+        ageRange: "9 เดือน",
+        vaccineName: "MMR 1 (หัด-คางทูม-หัดเยอรมัน)",
+        description: "ป้องกันหัด คางทูม หัดเยอรมัน เข็มแรก",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "9m-je1",
+        ageRange: "9 เดือน",
+        vaccineName: "JE 1 (ไข้สมองอักเสบเจอี)",
+        description: "ป้องกันไข้สมองอักเสบเจแปนนิส เข็มแรก",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      // 12 เดือน
+      {
+        id: "12m-je2",
+        ageRange: "12 เดือน",
+        vaccineName: "JE 2",
+        description: "ป้องกันไข้สมองอักเสบเจแปนนิส เข็มที่ 2",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      // 18 เดือน
+      {
+        id: "18m-dtap4",
+        ageRange: "18 เดือน",
+        vaccineName: "DTaP-IPV-Hib 4",
+        description: "คอตีบ-บาดทะยัก-ไอกรน-โปลิโอ-ฮิบ (5 in 1) เข็มที่ 4",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "18m-mmr2",
+        ageRange: "18 เดือน",
+        vaccineName: "MMR 2",
+        description: "ป้องกันหัด คางทูม หัดเยอรมัน เข็มที่ 2",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "18m-var",
+        ageRange: "18 เดือน",
+        vaccineName: "Varicella (อีสุกอีใส)",
+        description: "ป้องกันอีสุกอีใส",
+        importance: "ปานกลาง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "18m-hepa",
+        ageRange: "18 เดือน",
+        vaccineName: "Hepatitis A 1 (ตับอักเสบเอ)",
+        description: "ป้องกันตับอักเสบเอ เข็มแรก (ไม่บังคับ)",
+        importance: "ปานกลาง",
+        reference: "กรมควบคุมโรค"
+      },
+      // 2.5-3 ปี
+      {
+        id: "30m-hepa2",
+        ageRange: "2.5 ปี",
+        vaccineName: "Hepatitis A 2",
+        description: "ป้องกันตับอักเสบเอ เข็มที่ 2 (ห่างจากเข็มแรก 6-12 เดือน)",
+        importance: "ปานกลาง",
+        reference: "กรมควบคุมโรค"
+      },
+      {
+        id: "36m-je3",
+        ageRange: "3 ปี",
+        vaccineName: "JE 3 (Booster)",
+        description: "ป้องกันไข้สมองอักเสบเจแ���นนิส เข็มกระตุ้น",
+        importance: "สูง",
+        reference: "กรมควบคุมโรค"
       }
-      
-      timerInterval = setInterval(() => {
-        remainingSeconds--;
-        totalTime++;
-        updateTimerDisplay();
+    ];
+
+    const milestonesData = [
+      // 0-3 เดือน
+      {
+        id: "0-3m-1",
+        ageRange: "0-3 เดือน",
+        category: "🏃 การเคลื่อนไหว",
+        milestone: "ยกศีรษะขึ้นได้เมื่อนอนคว่ำ",
+        description: "เมื่อนอนคว่ำ สามารถยกศีรษะขึ้นได้ 45-90 องศา และประคองศีรษะได้ชั่วขณะ",
+        reference: "กรมอนามัย"
+      },
+      {
+        id: "0-3m-2",
+        ageRange: "0-3 เดือน",
+        category: "👀 สายตา-การมองเห็น",
+        milestone: "มองตามวัตถุที่เคลื่อนไหว 180 องศา",
+        description: "สามารถติดตามวัตถุสีสดใสหรือใบหน้าที่เคลื่อนที่ช้าๆ จากซ้ายไปขวาได้เต็มครึ่งวง",
+        reference: "WHO"
+      },
+      {
+        id: "0-3m-3",
+        ageRange: "0-3 เดือน",
+        category: "😊 สังคม-อารมณ์",
+        milestone: "ยิ้มเมื่อเห็นผู้ปกครอง (Social Smile)",
+        description: "ยิ้มตอบเมื่อเห็นใบหน้าคุ้นเคย เป็นยิ้มที่มีเจตนา",
+        reference: "AAP"
+      },
+      // 4-6 เดือน
+      {
+        id: "4-6m-1",
+        ageRange: "4-6 เดือน",
+        category: "🏃 การเคลื่อนไหว",
+        milestone: "พลิกตัวได้��ั้งสองทาง",
+        description: "พลิกจากหงายเป็น��ว่ำได้ และพลิกจากคว่ำเป็นหงายได้",
+        reference: "กรมอนามัย"
+      },
+      {
+        id: "4-6m-2",
+        ageRange: "4-6 เดือน",
+        category: "✋ มือและนิ้ว",
+        milestone: "หยิบของใส่ปากได้",
+        description: "ใช้มือจับของเล่นและนำเข้าปากเพื่อสำรวจ",
+        reference: "กรมอนามัย"
+      },
+      {
+        id: "4-6m-3",
+        ageRange: "4-6 เดือน",
+        category: "👂 การได้ยิน-การสื่อสาร",
+        milestone: "ส่งเสียงพูดคุย (Babbling)",
+        description: "ส่งเสียงพยางค์ซ้ำๆ เช่น 'บ���-บา' 'มา-มา' แต่ยังไม่มีความหมาย",
+        reference: "AAP"
+      },
+      // 7-9 เดือน
+      {
+        id: "7-9m-1",
+        ageRange: "7-9 เดือน",
+        category: "🏃 การเคลื่อนไหว",
+        milestone: "นั่งได้เองโดยไม่ต้องค้ำจุน",
+        description: "นั่งได้มั่นคงโดยไม่ต้องใช้มือค้ำ สามารถหมุนตัวขณะนั่ง",
+        reference: "กรมอนามัย"
+      },
+      {
+        id: "7-9m-2",
+        ageRange: "7-9 เดือน",
+        category: "🏃 การเคลื่อนไหว",
+        milestone: "คลานไปมาได้",
+        description: "คลานด้วยท้องแนบพื้น หรือคลานคุกเข่าได้",
+        reference: "WHO"
+      },
+      {
+        id: "7-9m-3",
+        ageRange: "7-9 เดือน",
+        category: "✋ มือและนิ้ว",
+        milestone: "หยิบของเล็กด้วยนิ้วหัวแม่มือและนิ้วชี้",
+        description: "ใช้นิ้วหยิบของเล็กๆ อย่างแม่นยำ (Pincer Grasp)",
+        reference: "กรมอนามัย"
+      },
+      // 10-12 เดือน
+      {
+        id: "10-12m-1",
+        ageRange: "10-12 เดือน",
+        category: "🏃 การเคลื่อนไหว",
+        milestone: "ยืนได้โดยจับค้ำ",
+        description: "ยืนได้โดยจับเฟอร์นิเจอร์ บางคนเริ่มยืนได้เองโดยไม่จับ",
+        reference: "กรมอนามัย"
+      },
+      {
+        id: "10-12m-2",
+        ageRange: "10-12 เดือน",
+        category: "👂 การได้ยิน-การสื่อสาร",
+        milestone: "พูดคำแรก (มา-มา, พ่อ-พ่อ)",
+        description: "เริ่มพูดคำที่มีความหมายชัดเจน",
+        reference: "AAP"
+      },
+      {
+        id: "10-12m-3",
+        ageRange: "10-12 เดือน",
+        category: "🧠 การรับรู้",
+        milestone: "เลียนแบบท��าทาง",
+        description: "โบกมือบ๊าย บาย, ส่ายหน้าไม่เอา, พยักหน้าได้",
+        reference: "WHO"
+      },
+      // 13-18 เดือน
+      {
+        id: "13-18m-1",
+        ageRange: "13-18 เดือน",
+        category: "🏃 การเคลื่อนไหว",
+        milestone: "เดินได้เอง",
+        description: "เดินได้โดยไม่พยุงไม่จับค้ำ เดินได้คล่องแคล่วขึ้น",
+        reference: "กรมอนามัย"
+      },
+      {
+        id: "13-18m-2",
+        ageRange: "13-18 เดือน",
+        category: "✋ มือและนิ้ว",
+        milestone: "วาดขีดเขียนเส้นได้",
+        description: "ใช้สีเทียนหรือดินสอขีดเขียนเส้นตรง เส้นโค้ง",
+        reference: "AAP"
+      },
+      {
+        id: "13-18m-3",
+        ageRange: "13-18 เดือน",
+        category: "👂 การได้ยิน-การสื่อสาร",
+        milestone: "รู้จักคำศัพท์ 10-20 คำ",
+        description: "พูดคำง่ายๆ ได้ 10-20 คำ เช่น มา, หมา, น้ำ, นม",
+        reference: "AAP"
+      },
+      // 19-24 เดือน
+      {
+        id: "19-24m-1",
+        ageRange: "19-24 เดือน",
+        category: "🏃 การเคลื่อนไหว",
+        milestone: "วิ่งได้",
+        description: "วิ่งไปข้างหน้าได้ค���่องแคล่ว",
+        reference: "กรมอนามัย"
+      },
+      {
+        id: "19-24m-2",
+        ageRange: "19-24 เดือน",
+        category: "🏃 การเคลื่อนไ��ว",
+        milestone: "กระโดดทั้งสองเท้า",
+        description: "กระโดดยกเท้าทั้งสองขึ้นจากพื้นได้พร้อมกัน",
+        reference: "กรมอนามัย"
+      },
+      {
+        id: "19-24m-3",
+        ageRange: "19-24 เดือน",
+        category: "👂 การได้ยิน-การสื่อสาร",
+        milestone: "พูดประโยค 2 คำ",
+        description: "ต่อคำได้ 2 คำ เช่น 'หนูหิว' 'ไปเล่น'",
+        reference: "AAP"
+      },
+      {
+        id: "19-24m-4",
+        ageRange: "19-24 เดือน",
+        category: "😊 สังคม-อารมณ์",
+        milestone: "เริ่มเล่นแบบเลียนแบบ (Pretend Play)",
+        description: "เล่นบทบาทสมมติ เช่น ป้อน���ุ๊กตา แกล้งคุยโทรศัพท์",
+        reference: "Piaget"
+      },
+      // 2-2.5 ปี
+      {
+        id: "25-30m-1",
+        ageRange: "2-2.5 ปี",
+        category: "🏃 การเคลื่อนไหว",
+        milestone: "ขึ้นลงบันไดโดยจับราว สลับเท้า",
+        description: "ขึ้นลงบันไดโดยจับราว เริ่มสลับเท้าได้บ้าง",
+        reference: "AAP"
+      },
+      {
+        id: "25-30m-2",
+        ageRange: "2-2.5 ปี",
+        category: "✋ มือและนิ้ว",
+        milestone: "ซ่อบล็อก 8 ชิ้นได้",
+        description: "วางบล็อกซ้อนกัน 8 ชิ้นขึ้นไปได้",
+        reference: "AAP"
+      },
+      {
+        id: "25-30m-3",
+        ageRange: "2-2.5 ปี",
+        category: "👂 การได้ยิน-การสื่อสาร",
+        milestone: "พูดประโยค 3-4 คำ",
+        description: "พูดประโยคสั้นๆ เช่น 'หนูอยากกินข้าว'",
+        reference: "AAP"
+      },
+      {
+        id: "25-30m-4",
+        ageRange: "2-2.5 ปี",
+        category: "🧠 การรับรู้",
+        milestone: "รู้จักสี 2-3 สี",
+        description: "บอกหรือชี้สีพื้นฐานได้ เช่น แดง เหลือง น้ำเงิน",
+        reference: "WHO"
+      },
+      // 2.5-3 ปี
+      {
+        id: "31-36m-1",
+        ageRange: "2.5-3 ปี",
+        category: "🏃 การเคลื่อนไหว",
+        milestone: "ปั��นจักรยานสามล้อได้",
+        description: "ปั่นจักรยาน 3 ล้อไปข้างหน้าได้ ควบคุมทิศทางได้",
+        reference: "กรมอนามัย"
+      },
+      {
+        id: "31-36m-2",
+        ageRange: "2.5-3 ปี",
+        category: "✋ มือและนิ้ว",
+        milestone: "วาดวงกลมได้",
+        description: "วาดรูปวงกลมได้เองโดยประมาณ ปิดวงได้",
+        reference: "AAP"
+      },
+      {
+        id: "31-36m-3",
+        ageRange: "2.5-3 ปี",
+        category: "✋ มือและนิ้ว",
+        milestone: "ใช้กรรไกรตัดกระดาษได้",
+        description: "ใช้กรรไกรตัดกระดาษได้ แม้จะยังตัดไม่ตรง",
+        reference: "AAP"
+      },
+      {
+        id: "31-36m-4",
+        ageRange: "2.5-3 ปี",
+        category: "👂 การได้ยิน-การสื่อสาร",
+        milestone: "พูดได้ชัดเจน เข้าใจง่าย",
+        description: "คนอื่นสามารถเข้าใจคำพูดส่วนใหญ่ (75-100%) ได้",
+        reference: "AAP"
+      },
+      {
+        id: "31-36m-5",
+        ageRange: "2.5-3 ปี",
+        category: "🧠 การรับรู้",
+        milestone: "นับเลข 1-10 ได้",
+        description: "นับตัวเลข 1 ถึง 10 ได้",
+        reference: "WHO"
+      },
+      {
+        id: "31-36m-6",
+        ageRange: "2.5-3 ปี",
+        category: "😊 สังคม-���ารมณ์",
+        milestone: "เล่นบทบาทสมมติที่ซับซ้อน",
+        description: "เล่��บทบาทสมมติได้หลากหลาย เช่น เล่นเป็นหมอ ครู",
+        reference: "Piaget"
+      }
+    ];
+
+    let allData = [];
+    let childProfile = null;
+    let selectedAgeRange = "ทั้งหมด";
+    let selectedCategory = "ทั้งหมด";
+    let currentView = "profile"; // profile, checklist, assessment, vaccine, flashcard
+    let isLoading = false;
+
+    const dataHandler = {
+      onDataChanged(data) {
+        allData = data;
         
-        if (remainingSeconds <= 0) {
-          timeUp();
-        }
-      }, 1000);
-    }
-
-    function stopTimer() {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-    }
-
-    function timeUp() {
-      stopTimer();
-      const feedbackMessage = document.getElementById('feedbackMessage');
-      feedbackMessage.textContent = '⏰ หมดเวลา! ไปข้อถัดไป';
-      feedbackMessage.className = 'feedback-message incorrect show';
-      
-      document.getElementById('checkButton').style.display = 'none';
-      document.getElementById('nextButton').style.display = 'inline-block';
-      currentAnswers.forEach(input => input.disabled = true);
-      
-      document.getElementById('scoreValue').textContent = score;
-    }
-
-    function updateTimerDisplay() {
-      const timeString = `${String(remainingSeconds).padStart(2, '0')}s`;
-      const timerElement = document.getElementById('timerValue');
-      timerElement.textContent = timeString;
-      
-      if (remainingSeconds <= 3) {
-        timerElement.style.color = '#ff7675';
-      } else if (remainingSeconds <= 5) {
-        timerElement.style.color = '#fdcb6e';
-      } else {
-        timerElement.style.color = '#e17055';
-      }
-    }
-
-    function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${minutes} นาที ${secs} วินาที`;
-    }
-
-    function displayWord() {
-      startTimer();
-      
-      const category = vocabularyData[currentCategoryIndex];
-      const wordData = category.words[currentWordIndex];
-      
-      document.getElementById('categoryEmoji').textContent = category.emoji;
-      document.getElementById('categoryName').textContent = category.category.split(' ')[1];
-      
-      const hintSvg = document.getElementById('hintImage');
-      hintSvg.innerHTML = wordData.hint;
-      
-      const wordLettersContainer = document.getElementById('wordLetters');
-      wordLettersContainer.innerHTML = '';
-      currentAnswers = [];
-      
-      let inputIndex = 0;
-      for (let i = 0; i < wordData.pattern.length; i++) {
-        const letterBox = document.createElement('div');
-        letterBox.className = 'letter-box';
+        childProfile = data.find(item => item.type === "profile");
         
-        if (wordData.pattern[i] === '_') {
-          letterBox.classList.add('blank');
-          const input = document.createElement('input');
-          input.type = 'text';
-          input.maxLength = 1;
-          input.dataset.index = inputIndex;
-          input.dataset.correct = wordData.word[i].toLowerCase();
-          input.setAttribute('aria-label', `Letter ${inputIndex + 1}`);
-          
-          input.addEventListener('input', (e) => {
-            e.target.value = e.target.value.toLowerCase();
-            const nextInput = wordLettersContainer.querySelector(`input[data-index="${parseInt(e.target.dataset.index) + 1}"]`);
-            if (e.target.value && nextInput) {
-              nextInput.focus();
+        renderApp();
+      }
+    };
+
+    async function initializeApp() {
+      const initResult = await window.dataSdk.init(dataHandler);
+      if (!initResult.isOk) {
+        console.error("Failed to initialize data SDK");
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            renderApp();
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (value) => {
+                  config.background_color = value;
+                  window.elementSdk.setConfig({ background_color: value });
+                }
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (value) => {
+                  config.surface_color = value;
+                  window.elementSdk.setConfig({ surface_color: value });
+                }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              },
+              {
+                get: () => config.primary_action_color || defaultConfig.primary_action_color,
+                set: (value) => {
+                  config.primary_action_color = value;
+                  window.elementSdk.setConfig({ primary_action_color: value });
+                }
+              },
+              {
+                get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+                set: (value) => {
+                  config.secondary_action_color = value;
+                  window.elementSdk.setConfig({ secondary_action_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (value) => {
+                config.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              }
             }
-          });
-          
-          letterBox.appendChild(input);
-          currentAnswers.push(input);
-          inputIndex++;
-        } else {
-          letterBox.textContent = wordData.pattern[i];
-        }
-        
-        wordLettersContainer.appendChild(letterBox);
-      }
-      
-      if (currentAnswers.length > 0) {
-        setTimeout(() => currentAnswers[0].focus(), 100);
-      }
-      
-      document.getElementById('checkButton').style.display = 'inline-block';
-      document.getElementById('nextButton').style.display = 'none';
-      document.getElementById('feedbackMessage').classList.remove('show', 'correct', 'incorrect');
-    }
-
-    function checkAnswer() {
-      stopTimer();
-      
-      let allCorrect = true;
-      let allFilled = true;
-      
-      currentAnswers.forEach(input => {
-        const value = input.value ? input.value.trim() : '';
-        if (value === '') {
-          allFilled = false;
-        }
-        if (value.toLowerCase() !== input.dataset.correct.toLowerCase()) {
-          allCorrect = false;
-        }
-      });
-      
-      const feedbackMessage = document.getElementById('feedbackMessage');
-      const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
-      
-      if (!allFilled) {
-        feedbackMessage.textContent = '⚠️ กรุณากรอกตัวอักษรให้ครบทุกช่อง';
-        feedbackMessage.className = 'feedback-message incorrect show';
-        startTimer();
-        setTimeout(() => {
-          feedbackMessage.classList.remove('show');
-        }, 2000);
-        return;
-      }
-      
-      if (allCorrect) {
-        score++;
-        feedbackMessage.textContent = config.correct_message || defaultConfig.correct_message;
-        feedbackMessage.className = 'feedback-message correct show';
-        document.getElementById('checkButton').style.display = 'none';
-        document.getElementById('nextButton').style.display = 'inline-block';
-        currentAnswers.forEach(input => {
-          input.disabled = true;
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["app_title", config.app_title || defaultConfig.app_title],
+            ["subtitle", config.subtitle || defaultConfig.subtitle]
+          ])
         });
-        document.getElementById('scoreValue').textContent = score;
+      }
+
+      renderApp();
+    }
+
+    function calculateAge(birthdate) {
+      const birth = new Date(birthdate);
+      const today = new Date();
+      
+      let years = today.getFullYear() - birth.getFullYear();
+      let months = today.getMonth() - birth.getMonth();
+      
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+      
+      if (today.getDate() < birth.getDate()) {
+        months--;
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+      }
+      
+      const totalMonths = years * 12 + months;
+      
+      if (years === 0) {
+        return { text: `${months} เดือน`, months: totalMonths };
+      } else if (months === 0) {
+        return { text: `${years} ปี`, months: totalMonths };
       } else {
-        feedbackMessage.textContent = config.incorrect_message || defaultConfig.incorrect_message;
-        feedbackMessage.className = 'feedback-message incorrect show';
-        startTimer();
-        
-        setTimeout(() => {
-          feedbackMessage.classList.remove('show');
-        }, 2000);
+        return { text: `${years} ปี ${months} เดือน`, months: totalMonths };
       }
     }
 
-    function nextWord() {
-      currentWordIndex++;
-      
-      if (currentWordIndex >= vocabularyData[currentCategoryIndex].words.length) {
-        currentWordIndex = 0;
-        currentCategoryIndex++;
+    function getExpectedAgeRange(months) {
+      if (months <= 3) return "0-3 เดือน";
+      if (months <= 6) return "4-6 เดือน";
+      if (months <= 9) return "7-9 เดือน";
+      if (months <= 12) return "10-12 เดือน";
+      if (months <= 18) return "13-18 เดือน";
+      if (months <= 24) return "19-24 เดือน";
+      if (months <= 30) return "2-2.5 ปี";
+      return "2.5-3 ปี";
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast-message');
+      if (toast) {
+        toast.textContent = message;
+        toast.classList.remove('hidden');
+        toast.style.opacity = '1';
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => toast.classList.add('hidden'), 300);
+        }, 2500);
       }
+    }
+
+    async function saveChildProfile(event) {
+      event.preventDefault();
       
-      if (currentCategoryIndex >= vocabularyData.length) {
-        showCompletion();
+      if (isLoading) return;
+      
+      const name = document.getElementById('child-name').value.trim();
+      const birthdate = document.getElementById('child-birthdate').value;
+      const gender = document.getElementById('child-gender').value;
+      
+      if (!name || !birthdate || !gender) {
+        showToast("กรุณากรอกข้อมูลให้ครบถ้วน");
         return;
       }
+
+      isLoading = true;
       
-      displayWord();
+      if (childProfile) {
+        const result = await window.dataSdk.update({
+          __backendId: childProfile.__backendId,
+          type: "profile",
+          child_name: name,
+          child_birthdate: birthdate,
+          child_gender: gender,
+          milestone_id: "",
+          completed: false,
+          completed_date: "",
+          notes: "",
+          vaccine_id: "",
+          vaccine_date: ""
+        });
+        
+        if (result.isOk) {
+          showToast("✓ บันทึกข้อมูลเรียบร้อย");
+          currentView = "checklist";
+        } else {
+          showToast("เกิดข้อผิดพลาด กรุณาลองใหม่");
+        }
+      } else {
+        if (allData.length >= 999) {
+          showToast("ถึงขีดจำกัด 999 รายการ");
+          isLoading = false;
+          return;
+        }
+        
+        const result = await window.dataSdk.create({
+          type: "profile",
+          child_name: name,
+          child_birthdate: birthdate,
+          child_gender: gender,
+          milestone_id: "",
+          completed: false,
+          completed_date: "",
+          notes: "",
+          vaccine_id: "",
+          vaccine_date: ""
+        });
+        
+        if (result.isOk) {
+          showToast("✓ บันทึกข้อมูลเรียบร้อ��");
+          currentView = "checklist";
+        } else {
+          showToast("เกิดข้อผิดพลาด กรุณาลองใหม่");
+        }
+      }
+      
+      isLoading = false;
     }
 
-    function showCompletion() {
-      stopTimer();
-      document.getElementById('gameContent').style.display = 'none';
-      document.getElementById('completionScreen').classList.add('show');
-      document.getElementById('finalScore').textContent = score;
-      document.getElementById('finalTime').textContent = formatTime(totalTime);
+    async function toggleMilestone(milestoneId) {
+      if (isLoading) return;
+
+      const existing = allData.find(item => item.milestone_id === milestoneId);
+      
+      if (existing) {
+        isLoading = true;
+        
+        const result = await window.dataSdk.update({
+          __backendId: existing.__backendId,
+          type: "milestone",
+          milestone_id: existing.milestone_id,
+          completed: !existing.completed,
+          completed_date: !existing.completed ? new Date().toISOString() : existing.completed_date,
+          notes: existing.notes || "",
+          child_name: "",
+          child_birthdate: "",
+          child_gender: "",
+          vaccine_id: "",
+          vaccine_date: ""
+        });
+        
+        isLoading = false;
+        
+        if (!result.isOk) {
+          showToast("เกิดข้อผิดพลาด กรุณาลองใหม่");
+        }
+      } else {
+        if (allData.length >= 999) {
+          showToast("ถึงขีดจำกัด 999 รายการ");
+          return;
+        }
+
+        isLoading = true;
+        
+        const result = await window.dataSdk.create({
+          type: "milestone",
+          milestone_id: milestoneId,
+          completed: true,
+          completed_date: new Date().toISOString(),
+          notes: "",
+          child_name: "",
+          child_birthdate: "",
+          child_gender: "",
+          vaccine_id: "",
+          vaccine_date: ""
+        });
+        
+        isLoading = false;
+        
+        if (!result.isOk) {
+          showToast("เกิดข้อผิดพลาด กรุณาลองใหม่");
+        }
+      }
     }
 
-    async function onConfigChange(config) {
-      document.getElementById('gameTitle').textContent = config.game_title || defaultConfig.game_title;
-      document.getElementById('instructions').textContent = config.instructions_text || defaultConfig.instructions_text;
-      document.getElementById('checkButton').innerHTML = config.check_button_text || defaultConfig.check_button_text;
-      document.getElementById('nextButton').innerHTML = config.next_button_text || defaultConfig.next_button_text;
-      document.getElementById('scoreLabel').textContent = config.score_label || defaultConfig.score_label;
+    async function updateNotes(milestoneId, notes) {
+      const existing = allData.find(item => item.milestone_id === milestoneId);
+      if (!existing) return;
+
+      const result = await window.dataSdk.update({
+        __backendId: existing.__backendId,
+        type: "milestone",
+        milestone_id: existing.milestone_id,
+        completed: existing.completed,
+        completed_date: existing.completed_date,
+        notes: notes,
+        child_name: "",
+        child_birthdate: "",
+        child_gender: "",
+        vaccine_id: "",
+        vaccine_date: ""
+      });
+      
+      if (result.isOk) {
+        showToast("✓ บันทึกหมายเหตุเรียบร้อย");
+      } else {
+        showToast("เกิดข้อผิดพลาด กรุณาลองใหม่");
+      }
     }
 
-    document.getElementById('checkButton').addEventListener('click', checkAnswer);
-    document.getElementById('nextButton').addEventListener('click', nextWord);
+    async function saveVaccineDate(vaccineId, date) {
+      if (isLoading) return;
 
-    document.getElementById('totalQuestions').textContent = totalWords;
+      const existing = allData.find(item => item.vaccine_id === vaccineId);
+      
+      if (existing) {
+        isLoading = true;
+        
+        const result = await window.dataSdk.update({
+          __backendId: existing.__backendId,
+          type: "vaccine",
+          vaccine_id: vaccineId,
+          vaccine_date: date,
+          milestone_id: "",
+          completed: false,
+          completed_date: "",
+          notes: "",
+          child_name: "",
+          child_birthdate: "",
+          child_gender: "",
+          flashcard_id: "",
+          mastered: false,
+          last_practiced: ""
+        });
+        
+        isLoading = false;
+        
+        if (result.isOk) {
+          showToast("✓ บันทึกวันที่ฉีดวัคซีนแล้ว");
+        } else {
+          showToast("เกิดข้อผิดพลาด กรุณาลองใหม่");
+        }
+      } else {
+        if (allData.length >= 999) {
+          showToast("ถึงขีดจำกัด 999 รายการ");
+          return;
+        }
 
-    if (window.elementSdk) {
-      window.elementSdk.init({
-        defaultConfig: defaultConfig,
-        onConfigChange: onConfigChange,
-        mapToCapabilities: (config) => ({
-          recolorables: [],
-          borderables: [],
-          fontEditable: undefined,
-          fontSizeable: undefined
-        }),
-        mapToEditPanelValues: (config) => new Map([
-          ["game_title", config.game_title || defaultConfig.game_title],
-          ["instructions_text", config.instructions_text || defaultConfig.instructions_text],
-          ["check_button_text", config.check_button_text || defaultConfig.check_button_text],
-          ["next_button_text", config.next_button_text || defaultConfig.next_button_text],
-          ["correct_message", config.correct_message || defaultConfig.correct_message],
-          ["incorrect_message", config.incorrect_message || defaultConfig.incorrect_message],
-          ["score_label", config.score_label || defaultConfig.score_label]
-        ])
+        isLoading = true;
+        
+        const result = await window.dataSdk.create({
+          type: "vaccine",
+          vaccine_id: vaccineId,
+          vaccine_date: date,
+          milestone_id: "",
+          completed: false,
+          completed_date: "",
+          notes: "",
+          child_name: "",
+          child_birthdate: "",
+          child_gender: "",
+          flashcard_id: "",
+          mastered: false,
+          last_practiced: ""
+        });
+        
+        isLoading = false;
+        
+        if (result.isOk) {
+          showToast("✓ บันทึกวันที่ฉีดวัคซีนแล้ว");
+        } else {
+          showToast("เก��ดข้อผิดพลาด กรุณาลองใหม่");
+        }
+      }
+    }
+
+    async function toggleFlashcardMastered(flashcardId) {
+      if (isLoading) return;
+
+      const existing = allData.find(item => item.flashcard_id === flashcardId);
+      
+      if (existing) {
+        isLoading = true;
+        
+        const result = await window.dataSdk.update({
+          __backendId: existing.__backendId,
+          type: "flashcard",
+          flashcard_id: flashcardId,
+          mastered: !existing.mastered,
+          last_practiced: new Date().toISOString(),
+          milestone_id: "",
+          completed: false,
+          completed_date: "",
+          notes: "",
+          child_name: "",
+          child_birthdate: "",
+          child_gender: "",
+          vaccine_id: "",
+          vaccine_date: ""
+        });
+        
+        isLoading = false;
+        
+        if (!result.isOk) {
+          showToast("เกิดข้อผิด��ลาด กรุณาลองใหม่");
+        }
+      } else {
+        if (allData.length >= 999) {
+          showToast("ถึงขีดจำกัด 999 รายการ");
+          return;
+        }
+
+        isLoading = true;
+        
+        const result = await window.dataSdk.create({
+          type: "flashcard",
+          flashcard_id: flashcardId,
+          mastered: true,
+          last_practiced: new Date().toISOString(),
+          milestone_id: "",
+          completed: false,
+          completed_date: "",
+          notes: "",
+          child_name: "",
+          child_birthdate: "",
+          child_gender: "",
+          vaccine_id: "",
+          vaccine_date: ""
+        });
+        
+        isLoading = false;
+        
+        if (!result.isOk) {
+          showToast("เกิดข้อผิดพลาด กรุณาลองใหม่");
+        }
+      }
+    }
+
+    function renderApp() {
+      const config = window.elementSdk?.config || defaultConfig;
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const appTitle = config.app_title || defaultConfig.app_title;
+      const subtitle = config.subtitle || defaultConfig.subtitle;
+
+      const babySVG = `
+        <svg width="60" height="60" viewBox="0 0 100 100" class="float-animation">
+          <circle cx="50" cy="40" r="30" fill="${primaryColor}" opacity="0.2"/>
+          <circle cx="50" cy="45" r="25" fill="${primaryColor}"/>
+          <circle cx="42" cy="42" r="4" fill="white"/>
+          <circle cx="58" cy="42" r="4" fill="white"/>
+          <circle cx="43" cy="42" r="2" fill="${textColor}"/>
+          <circle cx="59" cy="42" r="2" fill="${textColor}"/>
+          <path d="M 45 52 Q 50 56 55 52" stroke="${textColor}" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <circle cx="38" cy="48" r="5" fill="${secondaryColor}" opacity="0.4"/>
+          <circle cx="62" cy="48" r="5" fill="${secondaryColor}" opacity="0.4"/>
+        </svg>
+      `;
+
+      if (currentView === "profile") {
+        renderProfileView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG);
+      } else if (currentView === "checklist") {
+        renderChecklistView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG);
+      } else if (currentView === "assessment") {
+        renderAssessmentView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG);
+      } else if (currentView === "vaccine") {
+        renderVaccineView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG);
+      } else if (currentView === "flashcard") {
+        renderFlashcardView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG);
+      }
+    }
+
+    function renderProfileView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG) {
+      const hasProfile = childProfile && childProfile.child_name;
+      
+      document.getElementById('app').innerHTML = `
+        <div style="background: linear-gradient(135deg, ${bgColor} 0%, #fff0f5 100%); font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; min-height: 100%; width: 100%; padding: 24px;">
+          <div style="max-width: 800px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 32px;">
+              <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+                ${babySVG}
+              </div>
+              <h1 style="color: ${textColor}; font-size: ${baseSize * 2}px; font-weight: 600; margin: 0 0 8px 0; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ${appTitle}
+              </h1>
+              <p style="color: ${textColor}; font-size: ${baseSize * 1.05}px; margin: 0; opacity: 0.8; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ${subtitle}
+              </p>
+            </div>
+
+            ${hasProfile ? `
+              <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center;">
+                <button onclick="currentView='profile'; renderApp();" style="background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor}); color: white; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(255,158,187,0.4); font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  👶 ข้อมูลเด็ก
+                </button>
+                <button onclick="currentView='checklist'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  ✅ Checklist
+                </button>
+                <button onclick="currentView='vaccine'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  💉 วัคซีน
+                </button>
+                <button onclick="currentView='flashcard'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  🎴 Flashcard
+                </button>
+                <button onclick="currentView='assessment'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  ��� ประเมินผล
+                </button>
+              </div>
+            ` : ''}
+
+            <div class="fade-in" style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 24px; padding: 32px; box-shadow: 0 8px 20px rgba(255,158,187,0.2); border: 4px solid ${secondaryColor}20;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <span style="font-size: ${baseSize * 2.5}px; margin-bottom: 12px; display: block;">👶✨</span>
+                <h2 style="color: ${textColor}; font-size: ${baseSize * 1.5}px; font-weight: 600; margin: 0 0 8px 0; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  ${hasProfile ? 'แก้ไขข้อมูลเด็ก' : 'กรอกข้อมูลเด็ก'}
+                </h2>
+                <p style="color: ${textColor}; font-size: ${baseSize * 0.95}px; margin: 0; opacity: 0.7; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  ข้อมูลนี้จะใช้ในการประเมินและติดตามพัฒนาการ
+                </p>
+              </div>
+
+              <form id="profile-form" onsubmit="saveChildProfile(event); return false;">
+                <div style="margin-bottom: 20px;">
+                  <label for="child-name" style="display: flex; align-items: center; gap: 8px; color: ${textColor}; font-size: ${baseSize * 1}px; font-weight: 600; margin-bottom: 8px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                    <span style="font-size: ${baseSize * 1.3}px;">👤</span>
+                    ชื่อเด็ก
+                  </label>
+                  <input 
+                    type="text" 
+                    id="child-name" 
+                    placeholder="ระบุชื่อ-นามสกุล"
+                    value="${hasProfile ? childProfile.child_name : ''}"
+                    required
+                    style="width: 100%; padding: 14px; border-radius: 12px; border: 3px solid ${secondaryColor}; font-size: ${baseSize}px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; color: ${textColor}; box-sizing: border-box;"
+                  >
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                  <label for="child-birthdate" style="display: flex; align-items: center; gap: 8px; color: ${textColor}; font-size: ${baseSize * 1}px; font-weight: 600; margin-bottom: 8px; font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif !important;">
+                    <span style="font-size: ${baseSize * 1.3}px;">🎂</span>
+                    <span style="font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif !important;">วันเกิด</span>
+                  </label>
+                  <input 
+                    type="date" 
+                    id="child-birthdate"
+                    value="${hasProfile ? childProfile.child_birthdate : ''}"
+                    max="${new Date().toISOString().split('T')[0]}"
+                    required
+                    style="width: 100%; padding: 14px; border-radius: 12px; border: 3px solid ${secondaryColor}; font-size: ${baseSize}px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; color: ${textColor}; box-sizing: border-box;"
+                  >
+                </div>
+
+                <div style="margin-bottom: 28px;">
+                  <label for="child-gender" style="display: flex; align-items: center; gap: 8px; color: ${textColor}; font-size: ${baseSize * 1}px; font-weight: 600; margin-bottom: 8px; font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif !important;">
+                    <span style="font-size: ${baseSize * 1.3}px;">⚧</span>
+                    <span style="font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif !important;">เพศ</span>
+                  </label>
+                  <select 
+                    id="child-gender"
+                    required
+                    style="width: 100%; padding: 14px; border-radius: 12px; border: 3px solid ${secondaryColor}; font-size: ${baseSize}px; font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif !important; color: ${textColor}; cursor: pointer; box-sizing: border-box;"
+                  >
+                    <option value="" style="font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif !important;">กรุณาเลือกเพศ</option>
+                    <option value="male" ${hasProfile && childProfile.child_gender === 'male' ? 'selected' : ''} style="font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif !important;">เด็กชาย</option>
+                    <option value="female" ${hasProfile && childProfile.child_gender === 'female' ? 'selected' : ''} style="font-family: 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif !important;">เด็กหญิง</option>
+                  </select>
+                </div>
+
+                <button 
+                  type="submit"
+                  ${isLoading ? 'disabled' : ''}
+                  style="width: 100%; background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor}); color: white; padding: 16px; border-radius: 12px; font-size: ${baseSize * 1.1}px; font-weight: 600; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(255,158,187,0.4); transition: all 0.3s; ${isLoading ? 'opacity: 0.6;' : ''} font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;"
+                >
+                  ${isLoading ? '⏳ กำลังบันทึก...' : '💾 บันทึกข้อมูล'}
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div id="toast-message" class="hidden" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor}); color: white; padding: 16px 32px; border-radius: 35px; font-size: ${baseSize * 0.95}px; box-shadow: 0 8px 24px rgba(255,158,187,0.5); z-index: 1000; transition: opacity 0.3s; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; font-weight: 500; opacity: 0;"></div>
+        </div>
+      `;
+    }
+
+    function renderVaccineView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG) {
+      if (!childProfile) {
+        currentView = "profile";
+        renderApp();
+        return;
+      }
+
+      const ageInfo = calculateAge(childProfile.child_birthdate);
+      
+      const vaccineRecords = allData.filter(item => item.type === "vaccine");
+      
+      const ageRanges = ["ทั้งหมด", ...new Set(vaccinesData.map(v => v.ageRange))];
+      
+      const filteredVaccines = selectedAgeRange === "ทั้งหมด" 
+        ? vaccinesData 
+        : vaccinesData.filter(v => v.ageRange === selectedAgeRange);
+      
+      const completedCount = filteredVaccines.filter(v => 
+        vaccineRecords.find(r => r.vaccine_id === v.id && r.vaccine_date)
+      ).length;
+      const totalCount = filteredVaccines.length;
+      const progressPercent = totalCount > 0 ? (completedCount / totalCount * 100).toFixed(0) : 0;
+
+      document.getElementById('app').innerHTML = `
+        <div style="background: linear-gradient(135deg, ${bgColor} 0%, #fff0f5 100%); font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; min-height: 100%; width: 100%; padding: 24px;">
+          <div style="max-width: 1000px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                ${babySVG}
+              </div>
+              <h1 style="color: ${textColor}; font-size: ${baseSize * 1.8}px; font-weight: 600; margin: 0 0 8px 0; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ${appTitle}
+              </h1>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center;">
+              <button onclick="currentView='profile'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                👶 ข้อมูลเด็ก
+              </button>
+              <button onclick="currentView='checklist'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ✅ Checklist
+              </button>
+              <button onclick="currentView='vaccine'; renderApp();" style="background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor}); color: white; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(255,158,187,0.4); font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                💉 วัคซีน
+              </button>
+              <button onclick="currentView='flashcard'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                🎴 Flashcard
+              </button>
+              <button onclick="currentView='assessment'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                📊 ประเมินผล
+              </button>
+            </div>
+
+            <div style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(255,158,187,0.15); border: 3px solid ${secondaryColor};">
+              <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                  <div style="font-size: ${baseSize * 0.85}px; color: ${textColor}; opacity: 0.7; margin-bottom: 4px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">ชื่อ</div>
+                  <div style="font-size: ${baseSize * 1.1}px; color: ${textColor}; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${childProfile.child_name}</div>
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                  <div style="font-size: ${baseSize * 0.85}px; color: ${textColor}; opacity: 0.7; margin-bottom: 4px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">อายุ</div>
+                  <div style="font-size: ${baseSize * 1.1}px; color: ${primaryColor}; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${ageInfo.text}</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(255,158,187,0.15); border: 4px solid ${secondaryColor}20;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: ${baseSize * 1.8}px;">💉</span>
+                  <span style="color: ${textColor}; font-size: ${baseSize * 1.1}px; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">ความคืบหน้าวัคซีน</span>
+                </div>
+                <span style="color: ${primaryColor}; font-size: ${baseSize * 1.3}px; font-weight: 700;">${completedCount}/${totalCount}</span>
+              </div>
+              <div style="background: ${bgColor}; height: 18px; border-radius: 12px; overflow: hidden; border: 2px solid ${secondaryColor}30;">
+                <div style="background: linear-gradient(90deg, ${primaryColor}, ${secondaryColor}); height: 100%; width: ${progressPercent}%; transition: width 0.5s ease;"></div>
+              </div>
+              <p style="color: ${textColor}; font-size: ${baseSize * 0.9}px; margin: 10px 0 0 0; text-align: center; opacity: 0.8; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ✨ ${progressPercent}% เสร็จสมบูรณ์
+              </p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid ${secondaryColor};">
+              <label style="color: ${textColor}; font-size: ${baseSize * 0.9}px; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                <span style="font-size: ${baseSize * 1.1}px;">📅</span>
+                กรองตามช่วงอายุ
+              </label>
+              <select id="age-filter" style="width: 100%; padding: 10px; border-radius: 10px; border: 2px solid ${secondaryColor}; background-color: white; color: ${textColor}; font-size: ${baseSize * 0.95}px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; cursor: pointer;">
+                ${ageRanges.map(age => `<option value="${age}" ${age === selectedAgeRange ? 'selected' : ''} style="font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${age}</option>`).join('')}
+              </select>
+            </div>
+
+            <div style="display: grid; gap: 16px;">
+              ${filteredVaccines.map(vaccine => {
+                const record = vaccineRecords.find(r => r.vaccine_id === vaccine.id);
+                const vaccineDate = record?.vaccine_date || "";
+                const formattedDate = vaccineDate ? new Date(vaccineDate).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+                const isCompleted = !!vaccineDate;
+                
+                return `
+                  <div style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 16px; padding: 18px; box-shadow: 0 3px 12px rgba(255,158,187,0.12); border-left: 5px solid ${isCompleted ? primaryColor : secondaryColor}; border: 2px solid ${isCompleted ? primaryColor + '20' : secondaryColor + '15'};">
+                    <div style="display: flex; gap: 14px; align-items: start;">
+                      <div style="flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: ${isCompleted ? `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})` : 'white'}; border: 3px solid ${isCompleted ? primaryColor : secondaryColor}; display: flex; align-items: center; justify-content: center;">
+                        ${isCompleted ? `<svg class="checkmark-appear" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9L7 13L15 4" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
+                      </div>
+                      <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                          <h3 style="color: ${textColor}; font-size: ${baseSize * 1.05}px; font-weight: 600; margin: 0; ${isCompleted ? 'opacity: 0.7;' : ''} font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                            ${vaccine.vaccineName}
+                          </h3>
+                          <span style="background: linear-gradient(135deg, ${secondaryColor}, ${primaryColor}); color: white; padding: 5px 12px; border-radius: 20px; font-size: ${baseSize * 0.75}px; white-space: nowrap; font-weight: 500; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                            ${vaccine.ageRange}
+                          </span>
+                        </div>
+                        <p style="color: ${textColor}; font-size: ${baseSize * 0.9}px; margin: 0 0 6px 0; opacity: 0.75; line-height: 1.5; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                            ${vaccine.description}
+                        </p>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                          <span style="color: ${vaccine.importance === 'สูง' ? '#f87171' : '#fbbf24'}; font-size: ${baseSize * 0.8}px; font-weight: 600; background: ${vaccine.importance === 'สูง' ? '#fee2e2' : '#fef3c7'}; padding: 3px 10px; border-radius: 12px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                            ${vaccine.importance === 'สูง' ? '⚠️ สำคัญมาก' : '💡 แนะนำ'}
+                          </span>
+                        </div>
+                        <span style="color: ${textColor}; font-size: ${baseSize * 0.7}px; opacity: 0.5; font-style: italic; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                          📖 ${vaccine.reference}
+                        </span>
+                        
+                        <div style="margin-top: 14px; display: flex; align-items: center; gap: 12px;">
+                          <label style="color: ${textColor}; font-size: ${baseSize * 0.85}px; font-weight: 600; white-space: nowrap; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                            📅 วันที่ฉีด:
+                          </label>
+                          <input 
+                            type="date" 
+                            class="vaccine-date-input"
+                            data-id="${vaccine.id}"
+                            value="${vaccineDate ? vaccineDate.split('T')[0] : ''}"
+                            max="${new Date().toISOString().split('T')[0]}"
+                            style="flex: 1; padding: 8px 12px; border: 2px solid ${secondaryColor}; border-radius: 8px; font-size: ${baseSize * 0.85}px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; color: ${textColor}; background: white; cursor: pointer;"
+                          >
+                        </div>
+                        
+                        ${isCompleted ? `
+                          <div style="margin-top: 10px; padding: 10px; background: linear-gradient(135deg, ${primaryColor}12, ${secondaryColor}12); border-radius: 8px; border-left: 3px solid ${primaryColor};">
+                            <p style="color: ${primaryColor}; font-size: ${baseSize * 0.8}px; margin: 0; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                              ✓ ฉีดเมื่อ: ${formattedDate}
+                            </p>
+                          </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            ${filteredVaccines.length === 0 ? `
+              <div style="background: white; border-radius: 16px; padding: 40px; text-align: center; border: 2px dashed ${secondaryColor};">
+                <div style="font-size: ${baseSize * 2.5}px; margin-bottom: 12px;">🔍</div>
+                <p style="color: ${textColor}; font-size: ${baseSize * 1.1}px; margin: 0; opacity: 0.6; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  ไม่พบวัคซีนในหมวดนี้
+                </p>
+              </div>
+            ` : ''}
+
+            <div style="background: linear-gradient(135deg, ${primaryColor}10, ${secondaryColor}10); border-radius: 20px; padding: 20px; margin-top: 24px; border: 3px solid ${secondaryColor};">
+              <div style="text-align: center; margin-bottom: 10px;">
+                <span style="font-size: ${baseSize * 1.8}px;">💡</span>
+              </div>
+              <p style="color: ${textColor}; font-size: ${baseSize * 0.9}px; text-align: center; margin: 0 0 8px 0; opacity: 0.85; line-height: 1.6; font-weight: 500; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                <strong style="color: ${primaryColor};">หมายเหตุ:</strong> ตารางวัคซีนนี้เป็นแนวทางพื้นฐาน
+              </p>
+              <p style="color: ${textColor}; font-size: ${baseSize * 0.85}px; text-align: center; margin: 0; opacity: 0.75; line-height: 1.6; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                กรุณาปร���กษาแพทย์เพื่อวางแผนการฉีดวัคซีนที่เหมาะสมกับลูกน้อย 👨‍⚕️
+              </p>
+            </div>
+          </div>
+
+          <div id="toast-message" class="hidden" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor}); color: white; padding: 14px 28px; border-radius: 30px; font-size: ${baseSize * 0.9}px; box-shadow: 0 6px 20px rgba(255,158,187,0.4); z-index: 1000; transition: opacity 0.3s; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; font-weight: 500; opacity: 0;"></div>
+        </div>
+      `;
+
+      document.getElementById('age-filter').addEventListener('change', (e) => {
+        selectedAgeRange = e.target.value;
+        renderApp();
+      });
+
+      document.querySelectorAll('.vaccine-date-input').forEach(input => {
+        input.addEventListener('change', async (e) => {
+          const vaccineId = e.target.dataset.id;
+          const date = e.target.value;
+          if (date) {
+            await saveVaccineDate(vaccineId, new Date(date).toISOString());
+          }
+        });
       });
     }
 
-    displayWord();
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a58136ed21e0886',t:'MTc2NDMxNDE0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    function renderChecklistView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG) {
+      if (!childProfile) {
+        currentView = "profile";
+        renderApp();
+        return;
+      }
+
+      const ageInfo = calculateAge(childProfile.child_birthdate);
+      const expectedRange = getExpectedAgeRange(ageInfo.months);
+      
+      const ageRanges = ["ทั้งหมด", ...new Set(milestonesData.map(m => m.ageRange))];
+      const categories = ["ทั้งหม��", ...new Set(milestonesData.map(m => m.category))];
+
+      const filteredMilestones = milestonesData.filter(m => {
+        const ageMatch = selectedAgeRange === "ทั้งหมด" || m.ageRange === selectedAgeRange;
+        const categoryMatch = selectedCategory === "ทั้งหมด" || m.category === selectedCategory;
+        return ageMatch && categoryMatch;
+      });
+
+      const milestoneRecords = allData.filter(item => item.type === "milestone");
+      const completedCount = filteredMilestones.filter(m => 
+        milestoneRecords.find(r => r.milestone_id === m.id && r.completed)
+      ).length;
+      const totalCount = filteredMilestones.length;
+      const progressPercent = totalCount > 0 ? (completedCount / totalCount * 100).toFixed(0) : 0;
+
+      document.getElementById('app').innerHTML = `
+        <div style="background: linear-gradient(135deg, ${bgColor} 0%, #fff0f5 100%); font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; min-height: 100%; width: 100%; padding: 24px;">
+          <div style="max-width: 1000px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                ${babySVG}
+              </div>
+              <h1 style="color: ${textColor}; font-size: ${baseSize * 1.8}px; font-weight: 600; margin: 0 0 8px 0; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ${appTitle}
+              </h1>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center;">
+              <button onclick="currentView='profile'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                👶 ข้อมูลเด็ก
+              </button>
+              <button onclick="currentView='checklist'; renderApp();" style="background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor}); color: white; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(255,158,187,0.4); font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ✅ Checklist
+              </button>
+              <button onclick="currentView='vaccine'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                💉 วัคซีน
+              </button>
+              <button onclick="currentView='flashcard'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                🎴 Flashcard
+              </button>
+              <button onclick="currentView='assessment'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                📊 ประเมินผล
+              </button>
+            </div>
+
+            <div style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(255,158,187,0.15); border: 3px solid ${secondaryColor};">
+              <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                  <div style="font-size: ${baseSize * 0.85}px; color: ${textColor}; opacity: 0.7; margin-bottom: 4px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">ชื่อ</div>
+                  <div style="font-size: ${baseSize * 1.1}px; color: ${textColor}; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${childProfile.child_name}</div>
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                  <div style="font-size: ${baseSize * 0.85}px; color: ${textColor}; opacity: 0.7; margin-bottom: 4px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">อายุ</div>
+                  <div style="font-size: ${baseSize * 1.1}px; color: ${primaryColor}; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${ageInfo.text}</div>
+                </div>
+                <div style="background: linear-gradient(135deg, ${primaryColor}15, ${secondaryColor}15); padding: 12px 20px; border-radius: 12px; border-left: 4px solid ${primaryColor};">
+                  <div style="font-size: ${baseSize * 0.85}px; color: ${textColor}; opacity: 0.7; margin-bottom: 4px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">ช่วงพัฒนาการ</div>
+                  <div style="font-size: ${baseSize * 1}px; color: ${primaryColor}; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">📅 ${expectedRange}</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(255,158,187,0.15); border: 4px solid ${secondaryColor}20;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: ${baseSize * 1.8}px;">🎯</span>
+                  <span style="color: ${textColor}; font-size: ${baseSize * 1.1}px; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">ความคืบหน้า</span>
+                </div>
+                <span style="color: ${primaryColor}; font-size: ${baseSize * 1.3}px; font-weight: 700;">${completedCount}/${totalCount}</span>
+              </div>
+              <div style="background: ${bgColor}; height: 18px; border-radius: 12px; overflow: hidden; border: 2px solid ${secondaryColor}30;">
+                <div style="background: linear-gradient(90deg, ${primaryColor}, ${secondaryColor}); height: 100%; width: ${progressPercent}%; transition: width 0.5s ease;"></div>
+              </div>
+              <p style="color: ${textColor}; font-size: ${baseSize * 0.9}px; margin: 10px 0 0 0; text-align: center; opacity: 0.8; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ✨ ${progressPercent}% เสร็จสมบูรณ์
+              </p>
+            </div>
+
+            <div style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid ${secondaryColor};">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div>
+                  <label style="color: ${textColor}; font-size: ${baseSize * 0.9}px; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                    <span style="font-size: ${baseSize * 1.1}px;">📅</span>
+                    ช่วงอายุ
+                  </label>
+                  <select id="age-filter" style="width: 100%; padding: 10px; border-radius: 10px; border: 2px solid ${secondaryColor}; background-color: white; color: ${textColor}; font-size: ${baseSize * 0.95}px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; cursor: pointer;">
+                    ${ageRanges.map(age => `<option value="${age}" ${age === selectedAgeRange ? 'selected' : ''} style="font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${age}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label style="color: ${textColor}; font-size: ${baseSize * 0.9}px; font-weight: 600; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                    <span style="font-size: ${baseSize * 1.1}px;">🎨</span>
+                    ด้านพัฒนา��าร
+                  </label>
+                  <select id="category-filter" style="width: 100%; padding: 10px; border-radius: 10px; border: 2px solid ${secondaryColor}; background-color: white; color: ${textColor}; font-size: ${baseSize * 0.95}px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; cursor: pointer;">
+                    ${categories.map(cat => `<option value="${cat}" ${cat === selectedCategory ? 'selected' : ''} style="font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${cat}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; gap: 16px;">
+              ${filteredMilestones.map(milestone => {
+                const record = milestoneRecords.find(r => r.milestone_id === milestone.id);
+                const isCompleted = record?.completed || false;
+                const completedDate = record?.completed_date;
+                const formattedDate = completedDate ? new Date(completedDate).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+                
+                return `
+                  <div style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 16px; padding: 18px; box-shadow: 0 3px 12px rgba(255,158,187,0.12); border-left: 5px solid ${isCompleted ? primaryColor : secondaryColor}; border: 2px solid ${isCompleted ? primaryColor + '20' : secondaryColor + '15'};">
+                    <div style="display: flex; gap: 14px; align-items: start;">
+                      <button 
+                        class="milestone-checkbox" 
+                        data-id="${milestone.id}"
+                        style="flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; border: 3px solid ${isCompleted ? primaryColor : secondaryColor}; background: ${isCompleted ? `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})` : 'white'}; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;"
+                      >
+                        ${isCompleted ? `<svg class="checkmark-appear" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9L7 13L15 4" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
+                      </button>
+                      <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                          <h3 style="color: ${textColor}; font-size: ${baseSize * 1.05}px; font-weight: 600; margin: 0; ${isCompleted ? 'opacity: 0.7;' : ''} font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                            ${milestone.milestone}
+                          </h3>
+                          <span style="background: linear-gradient(135deg, ${secondaryColor}, ${primaryColor}); color: white; padding: 5px 12px; border-radius: 20px; font-size: ${baseSize * 0.75}px; white-space: nowrap; font-weight: 500; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                            ${milestone.ageRange}
+                          </span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                          <span style="font-size: ${baseSize * 1.1}px;">${milestone.category.split(' ')[0]}</span>
+                          <span style="color: ${primaryColor}; font-size: ${baseSize * 0.85}px; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                            ${milestone.category.split(' ')[1] || milestone.category}
+                          </span>
+                        </div>
+                        <p style="color: ${textColor}; font-size: ${baseSize * 0.9}px; margin: 0 0 6px 0; opacity: 0.75; line-height: 1.5; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                          ${milestone.description}
+                        </p>
+                        <span style="color: ${textColor}; font-size: ${baseSize * 0.7}px; opacity: 0.5; font-style: italic; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                          📖 ${milestone.reference}
+                        </span>
+                        ${isCompleted ? `
+                          <div style="margin-top: 10px; padding: 10px; background: linear-gradient(135deg, ${primaryColor}12, ${secondaryColor}12); border-radius: 8px; border-left: 3px solid ${primaryColor};">
+                            ${formattedDate ? `
+                              <p style="color: ${primaryColor}; font-size: ${baseSize * 0.8}px; margin: 0 0 8px 0; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                                ✓ บันทึกเมื่อ: ${formattedDate}
+                              </p>
+                            ` : ''}
+                            <label style="color: ${textColor}; font-size: ${baseSize * 0.8}px; font-weight: 600; display: block; margin-bottom: 5px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">📝 หมายเหตุ:</label>
+                            <textarea 
+                              class="notes-input" 
+                              data-id="${milestone.id}"
+                              placeholder="บันทึกรายละเอียด..."
+                              style="width: 100%; padding: 8px; border: 2px solid ${secondaryColor}; border-radius: 6px; font-size: ${baseSize * 0.85}px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; color: ${textColor}; background: white; resize: vertical; min-height: 50px; box-sizing: border-box;"
+                            >${record?.notes || ''}</textarea>
+                          </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+
+            ${filteredMilestones.length === 0 ? `
+              <div style="background: white; border-radius: 16px; padding: 40px; text-align: center; border: 2px dashed ${secondaryColor};">
+                <div style="font-size: ${baseSize * 2.5}px; margin-bottom: 12px;">🔍</div>
+                <p style="color: ${textColor}; font-size: ${baseSize * 1.1}px; margin: 0; opacity: 0.6; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  ไม่พบพัฒนาการในหมวดนี้
+                </p>
+              </div>
+            ` : ''}
+          </div>
+
+          <div id="toast-message" class="hidden" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor}); color: white; padding: 14px 28px; border-radius: 30px; font-size: ${baseSize * 0.9}px; box-shadow: 0 6px 20px rgba(255,158,187,0.4); z-index: 1000; transition: opacity 0.3s; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; font-weight: 500; opacity: 0;"></div>
+        </div>
+      `;
+
+      document.getElementById('age-filter').addEventListener('change', (e) => {
+        selectedAgeRange = e.target.value;
+        renderApp();
+      });
+
+      document.getElementById('category-filter').addEventListener('change', (e) => {
+        selectedCategory = e.target.value;
+        renderApp();
+      });
+
+      document.querySelectorAll('.milestone-checkbox').forEach(button => {
+        button.addEventListener('click', () => {
+          const milestoneId = button.dataset.id;
+          toggleMilestone(milestoneId);
+        });
+      });
+
+      document.querySelectorAll('.notes-input').forEach(textarea => {
+        let saveTimeout;
+        textarea.addEventListener('input', (e) => {
+          const milestoneId = e.target.dataset.id;
+          const notes = e.target.value;
+          
+          clearTimeout(saveTimeout);
+          saveTimeout = setTimeout(async () => {
+            await updateNotes(milestoneId, notes);
+          }, 1500);
+        });
+        
+        textarea.addEventListener('blur', async (e) => {
+          const milestoneId = e.target.dataset.id;
+          const notes = e.target.value;
+          clearTimeout(saveTimeout);
+          await updateNotes(milestoneId, notes);
+        });
+      });
+    }
+
+    function renderAssessmentView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG) {
+      if (!childProfile) {
+        currentView = "profile";
+        renderApp();
+        return;
+      }
+
+      const ageInfo = calculateAge(childProfile.child_birthdate);
+      const expectedRange = getExpectedAgeRange(ageInfo.months);
+      
+      const milestoneRecords = allData.filter(item => item.type === "milestone");
+      
+      const ageRanges = [...new Set(milestonesData.map(m => m.ageRange))];
+      const assessmentByAge = ageRanges.map(range => {
+        const milestonesInRange = milestonesData.filter(m => m.ageRange === range);
+        const completedInRange = milestonesInRange.filter(m => 
+          milestoneRecords.find(r => r.milestone_id === m.id && r.completed)
+        );
+        
+        return {
+          range,
+          total: milestonesInRange.length,
+          completed: completedInRange.length,
+          percent: milestonesInRange.length > 0 ? (completedInRange.length / milestonesInRange.length * 100).toFixed(0) : 0
+        };
+      });
+
+      const categories = [...new Set(milestonesData.map(m => m.category))];
+      const assessmentByCategory = categories.map(cat => {
+        const milestonesInCat = milestonesData.filter(m => m.category === cat);
+        const completedInCat = milestonesInCat.filter(m => 
+          milestoneRecords.find(r => r.milestone_id === m.id && r.completed)
+        );
+        
+        return {
+          category: cat,
+          total: milestonesInCat.length,
+          completed: completedInCat.length,
+          percent: milestonesInCat.length > 0 ? (completedInCat.length / milestonesInCat.length * 100).toFixed(0) : 0
+        };
+      });
+
+      const expectedMilestones = milestonesData.filter(m => {
+        const rangeMonths = {
+          "0-3 เดือน": 3,
+          "4-6 เดือน": 6,
+          "7-9 เดือน": 9,
+          "10-12 เดือน": 12,
+          "13-18 เดือน": 18,
+          "19-24 เดือน": 24,
+          "2-2.5 ปี": 30,
+          "2.5-3 ปี": 36
+        };
+        return rangeMonths[m.ageRange] <= ageInfo.months;
+      });
+
+      const completedExpected = expectedMilestones.filter(m => 
+        milestoneRecords.find(r => r.milestone_id === m.id && r.completed)
+      );
+
+      const developmentPercent = expectedMilestones.length > 0 
+        ? (completedExpected.length / expectedMilestones.length * 100).toFixed(0) 
+        : 0;
+
+      let developmentStatus = "";
+      let statusColor = primaryColor;
+      let statusIcon = "🌟";
+
+      if (developmentPercent >= 80) {
+        developmentStatus = "พัฒนาการดีเยี่ยม";
+        statusColor = "#4ade80";
+        statusIcon = "🌟";
+      } else if (developmentPercent >= 60) {
+        developmentStatus = "พัฒนาการดี";
+        statusColor = primaryColor;
+        statusIcon = "😊";
+      } else if (developmentPercent >= 40) {
+        developmentStatus = "พัฒนาการปานกลาง";
+        statusColor = "#fbbf24";
+        statusIcon = "⚠️";
+      } else {
+        developmentStatus = "ควรติดตามเ��ิ่มเติม";
+        statusColor = "#f87171";
+        statusIcon = "📌";
+      }
+
+      document.getElementById('app').innerHTML = `
+        <div style="background: linear-gradient(135deg, ${bgColor} 0%, #fff0f5 100%); font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; min-height: 100%; width: 100%; padding: 24px;">
+          <div style="max-width: 1000px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                ${babySVG}
+              </div>
+              <h1 style="color: ${textColor}; font-size: ${baseSize * 1.8}px; font-weight: 600; margin: 0 0 8px 0; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ${appTitle}
+              </h1>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; justify-content: center;">
+              <button onclick="currentView='profile'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                👶 ข้อมูลเด็ก
+              </button>
+              <button onclick="currentView='checklist'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ✅ Checklist
+              </button>
+              <button onclick="currentView='vaccine'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                💉 วัคซีน
+              </button>
+              <button onclick="currentView='flashcard'; renderApp();" style="background: white; color: ${textColor}; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: 3px solid ${secondaryColor}; cursor: pointer; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                🎴 Flashcard
+              </button>
+              <button onclick="currentView='assessment'; renderApp();" style="background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor}); color: white; padding: 12px 20px; border-radius: 25px; font-size: ${baseSize * 0.85}px; font-weight: 500; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(255,158,187,0.4); font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                📊 ประเมินผล
+              </button>
+            </div>
+
+            <div style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(255,158,187,0.15); border: 3px solid ${secondaryColor};">
+              <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 200px;">
+                  <div style="font-size: ${baseSize * 0.85}px; color: ${textColor}; opacity: 0.7; margin-bottom: 4px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">ชื่อ</div>
+                  <div style="font-size: ${baseSize * 1.1}px; color: ${textColor}; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${childProfile.child_name}</div>
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                  <div style="font-size: ${baseSize * 0.85}px; color: ${textColor}; opacity: 0.7; margin-bottom: 4px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">อายุ</div>
+                  <div style="font-size: ${baseSize * 1.1}px; color: ${primaryColor}; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${ageInfo.text}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="fade-in" style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 24px; padding: 32px; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(255,158,187,0.3); border: 4px solid ${statusColor}40; text-align: center;">
+              <div style="font-size: ${baseSize * 3}px; margin-bottom: 12px;">${statusIcon}</div>
+              <h2 style="color: ${textColor}; font-size: ${baseSize * 1.6}px; font-weight: 700; margin: 0 0 12px 0; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ผลการประเมินพัฒนาการ
+              </h2>
+              <div style="background: ${statusColor}20; padding: 20px; border-radius: 16px; margin-bottom: 16px; border: 3px solid ${statusColor}40;">
+                <div style="font-size: ${baseSize * 2.5}px; color: ${statusColor}; font-weight: 700; margin-bottom: 8px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  ${developmentPercent}%
+                </div>
+                <div style="font-size: ${baseSize * 1.2}px; color: ${statusColor}; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                  ${developmentStatus}
+                </div>
+              </div>
+              <p style="color: ${textColor}; font-size: ${baseSize * 0.95}px; margin: 0; opacity: 0.8; line-height: 1.6; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                ทำได้ <strong>${completedExpected.length}</strong> จาก <strong>${expectedMilestones.length}</strong> ข้อ<br>
+                ตามช่วงอายุที่เหมาะสม (${expectedRange})
+              </p>
+            </div>
+
+            <div class="fade-in" style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); border: 3px solid ${secondaryColor};">
+              <h3 style="color: ${textColor}; font-size: ${baseSize * 1.3}px; font-weight: 600; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                <span style="font-size: ${baseSize * 1.6}px;">📅</span>
+                ผลประเมินตามช่วงอายุ
+              </h3>
+              <div style="display: grid; gap: 14px;">
+                ${assessmentByAge.map(item => `
+                  <div style="background: ${item.range === expectedRange ? primaryColor + '15' : surfaceColor}; padding: 16px; border-radius: 12px; border-left: 4px solid ${item.range === expectedRange ? primaryColor : secondaryColor};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                      <span style="color: ${textColor}; font-size: ${baseSize * 0.95}px; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                        ${item.range} ${item.range === expectedRange ? '⭐' : ''}
+                      </span>
+                      <span style="color: ${primaryColor}; font-size: ${baseSize * 1}px; font-weight: 700;">${item.completed}/${item.total}</span>
+                    </div>
+                    <div style="background: white; height: 12px; border-radius: 8px; overflow: hidden; border: 2px solid ${secondaryColor}30;">
+                      <div style="background: linear-gradient(90deg, ${primaryColor}, ${secondaryColor}); height: 100%; width: ${item.percent}%; transition: width 0.5s ease;"></div>
+                    </div>
+                    <div style="text-align: right; margin-top: 4px;">
+                      <span style="color: ${textColor}; font-size: ${baseSize * 0.8}px; opacity: 0.7; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${item.percent}%</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="fade-in" style="background: linear-gradient(135deg, white, ${surfaceColor}); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 6px 18px rgba(0,0,0,0.1); border: 3px solid ${secondaryColor};">
+              <h3 style="color: ${textColor}; font-size: ${baseSize * 1.3}px; font-weight: 600; margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                <span style="font-size: ${baseSize * 1.6}px;">🎨</span>
+                ผลประเมินตามด้านพัฒนาการ
+              </h3>
+              <div style="display: grid; gap: 14px;">
+                ${assessmentByCategory.map(item => `
+                  <div style="background: ${surfaceColor}; padding: 16px; border-radius: 12px; border-left: 4px solid ${secondaryColor};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                      <span style="color: ${textColor}; font-size: ${baseSize * 0.95}px; font-weight: 600; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                        ${item.category}
+                      </span>
+                      <span style="color: ${primaryColor}; font-size: ${baseSize * 1}px; font-weight: 700;">${item.completed}/${item.total}</span>
+                    </div>
+                    <div style="background: white; height: 12px; border-radius: 8px; overflow: hidden; border: 2px solid ${secondaryColor}30;">
+                      <div style="background: linear-gradient(90deg, ${primaryColor}, ${secondaryColor}); height: 100%; width: ${item.percent}%; transition: width 0.5s ease;"></div>
+                    </div>
+                    <div style="text-align: right; margin-top: 4px;">
+                      <span style="color: ${textColor}; font-size: ${baseSize * 0.8}px; opacity: 0.7; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">${item.percent}%</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, ${primaryColor}10, ${secondaryColor}10); border-radius: 20px; padding: 24px; border: 3px solid ${secondaryColor};">
+              <div style="text-align: center; margin-bottom: 12px;">
+                <span style="font-size: ${baseSize * 2}px;">💡</span>
+              </div>
+              <p style="color: ${textColor}; font-size: ${baseSize * 0.95}px; text-align: center; margin: 0 0 10px 0; opacity: 0.85; line-height: 1.7; font-weight: 500; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                <strong style="color: ${primaryColor};">หมายเหตุ:</strong> ผลการประเมินนี้เป็นเพียงแนวทาง พัฒนาการแต่ละคนมีความแตกต่างกัน
+              </p>
+              <p style="color: ${textColor}; font-size: ${baseSize * 0.9}px; text-align: center; margin: 0; opacity: 0.75; line-height: 1.6; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif;">
+                หากมีข้อสงสัยหรือพบความล่าช้า ควรปรึกษาแพทย์ผู้เชี่ยวชาญ 👨‍⚕️
+              </p>
+            </div>
+          </div>
+
+          <div id="toast-message" class="hidden" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, ${primaryColor}, ${secondaryColor}); color: white; padding: 14px 28px; border-radius: 30px; font-size: ${baseSize * 0.9}px; box-shadow: 0 6px 20px rgba(255,158,187,0.4); z-index: 1000; transition: opacity 0.3s; font-family: '${fontFamily}', 'Sarabun', 'Prompt', 'Noto Sans Thai', sans-serif; font-weight: 500; opacity: 0;"></div>
+        </div>
+      `;
+    }
+
+    let selectedFlashcard = null;
+
+    function renderFlashcardView(config, bgColor, surfaceColor, textColor, primaryColor, secondaryColor, fontFamily, baseSize, appTitle, subtitle, babySVG) {
+      if (!childProfile) {
+        currentView = "profile";
+        renderApp();
+        return;
+      }
+
+      const ageInfo = calculateAge(childProfile.child_birthdate);
+      
+      const flashcardRecords = allData.filter(item => item.type === "flashcard");
+      
+      const ageRanges = ["ทั้งหมด", ...new Set(flashcardsData.map(f => f.ageRange))];
+      
+      const filteredFlashcards = selectedAgeRange === "ทั้งหมด" 
+        ? flashcardsData 
+        : flashcardsData.filter(f => f.ageRange === selectedAgeRange);
+      
+      const masteredCount = filteredFlashcards.filter(f => 
+        flashcardRecords.find(r => r.flashcard_id === f.id && r.mastered)
+      ).length;
+      const totalCount = filteredFlashcards.length;
+      const progressPercent = totalCount > 0 ? (masteredCount / totalCount * 100).toFixed(0) : 0;
+
+      function getFlashcardIllustration(flashcard) {
+        const illustrationMap = {
+          // 0-6 เดือน
+          "fc-0-6-1": `<svg width="180" height="180" viewBox="0 0 180 180"><rect width="60" height="60" fill="black"/><rect x="60" width="60" height="60" fill="white"/><rect x="120" width="60" height="60" fill="black"/><rect y="60" width="60" height="60" fill="white"/><rect x="60" y="60" width="60" height="60" fill="black"/><rect x="120" y="60" width="60" height="60" fill="white"/><rect y="120" width="60" height="60" fill="black"/><rect x="60" y="120" width="60" height="60" fill="white"/><rect x="120" y="120" width="60" height="60" fill="black"/><circle cx="90" cy="60" r="12" fill="black"/><circle cx="90" cy="120" r="12" fill="white"/></svg>`,
+          "fc-0-6-2": `<svg width="180" height="180" viewBox="0 0 180 180"><circle cx="90" cy="70" r="35" fill="${primaryColor}"/><circle cx="75" cy="65" r="8" fill="white"/><circle cx="105" cy="65" r="8" fill="white"/><ellipse cx="90" cy="85" rx="15" ry="8" fill="#ff6b9d"/><path d="M 70 120 Q 90 140 110 120" stroke="${textColor}" stroke-width="3" fill="none"/><text x="90" y="160" font-size="24" fill="${textColor}" text-anchor="middle" font-weight="bold">🐶 โฮ่ง โฮ่ง</text></svg>`,
+          
+          // 7-12 เดือน
+          "fc-7-12-1": `<svg width="180" height="180" viewBox="0 0 180 180"><rect x="20" y="40" width="140" height="100" rx="15" fill="white" stroke="${primaryColor}" stroke-width="4"/><text x="90" y="100" font-size="48" fill="${primaryColor}" text-anchor="middle" font-weight="bold">แม่</text><circle cx="50" cy="150" r="8" fill="${secondaryColor}"/><circle cx="90" cy="150" r="8" fill="${secondaryColor}"/><circle cx="130" cy="150" r="8" fill="${secondaryColor}"/></svg>`,
+          "fc-7-12-2": `<svg width="180" height="180" viewBox="0 0 180 180"><circle cx="90" cy="90" r="50" fill="${primaryColor}"/><circle cx="90" cy="90" r="40" fill="white"/><circle cx="90" cy="90" r="30" fill="${secondaryColor}"/><circle cx="90" cy="90" r="20" fill="${primaryColor}"/><text x="90" y="160" font-size="20" fill="${textColor}" text-anchor="middle" font-weight="bold">ลูกบอล</text></svg>`,
+          
+          // 13-18 เดือน
+          "fc-13-18-1": `<svg width="180" height="180" viewBox="0 0 180 180"><ellipse cx="90" cy="100" rx="40" ry="50" fill="${primaryColor}"/><circle cx="90" cy="70" r="30" fill="${primaryColor}"/><circle cx="75" cy="65" r="6" fill="black"/><circle cx="105" cy="65" r="6" fill="black"/><path d="M 75 78 Q 90 85 105 78" stroke="black" stroke-width="2" fill="none"/><ellipse cx="60" cy="90" rx="8" ry="12" fill="${secondaryColor}"/><ellipse cx="120" cy="90" rx="8" ry="12" fill="${secondaryColor}"/><path d="M 70 130 L 60 150 M 70 130 L 80 150" stroke="${textColor}" stroke-width="4"/><path d="M 110 130 L 100 150 M 110 130 L 120 150" stroke="${textColor}" stroke-width="4"/><text x="90" y="170" font-size="18" fill="${textColor}" text-anchor="middle" font-weight="bold">🐘 ช้าง</text></svg>`,
+          "fc-13-18-2": `<svg width="180" height="180" viewBox="0 0 180 180"><circle cx="40" cy="90" r="25" fill="${primaryColor}"/><rect x="65" y="65" width="50" height="50" fill="${secondaryColor}"/><polygon points="140,65 165,90 140,115" fill="${primaryColor}"/><text x="40" y="140" font-size="32" fill="${primaryColor}" font-weight="bold" text-anchor="middle">1</text><text x="90" y="140" font-size="32" fill="${secondaryColor}" font-weight="bold" text-anchor="middle">2</text><text x="140" y="140" font-size="32" fill="${primaryColor}" font-weight="bold" text-anchor="middle">3</text></svg>`,
+          
+          // 19-24 เดือน
+          "fc-19-24-1": `<svg width="180" height="180" viewBox="0 0 180 180"><rect x="30" y="30" width="50" height="50" fill="#ef4444" rx="8"/><rect x="100" y="30" width="50" height="50" fill="#fbbf24" rx="8"/><rect x="30" y="100" width="50" height="50" fill="#3b82f6" rx="8"/><rect x="100" y="100" width="50" height="50" fill="#22c55e" rx="8"/><text x="55" y="170" font-size="14" fill="${textColor}" text-anchor="middle">แดง</text><text x="125" y="170" font-size="14" fill="${textColor}" text-anchor="middle">เหลือง</text></svg>`,
+          "fc-19-24-2": `<svg width="180" height="180" viewBox="0 0 180 180"><rect x="20" y="50" width="65" height="80" rx="10" fill="white" stroke="${primaryColor}" stroke-width="3"/><text x="52" y="95" font-size="32" fill="${primaryColor}" text-anchor="middle" font-weight="bold">กิน</text><rect x="95" y="50" width="65" height="80" rx="10" fill="white" stroke="${secondaryColor}" stroke-width="3"/><text x="127" y="95" font-size="32" fill="${secondaryColor}" text-anchor="middle" font-weight="bold">ข้าว</text><path d="M 85 90 L 95 90" stroke="${textColor}" stroke-width="2" marker-end="url(#arrow)"/></svg>`,
+          "fc-19-24-3": `<svg width="180" height="180" viewBox="0 0 180 180"><circle cx="60" cy="70" r="35" fill="${primaryColor}"/><circle cx="50" cy="65" r="8" fill="white"/><circle cx="70" cy="65" r="8" fill="white"/><path d="M 45 85 Q 60 95 75 85" stroke="white" stroke-width="3" fill="none"/><circle cx="120" cy="70" r="35" fill="${secondaryColor}"/><circle cx="110" cy="65" r="8" fill="white"/><circle cx="130" cy="65" r="8" fill="white"/><path d="M 105 85 Q 120 78 135 85" stroke="white" stroke-width="3" fill="none"/><text x="60" y="130" font-size="16" fill="${textColor}" text-anchor="middle">😊 ยิ้ม</text><text x="120" y="130" font-size="16" fill="${textColor}" text-anchor="middle">😢 เศร้า</text></svg>`,
+          
+          // 2-2.5 ปี
+          "fc-25-30-1": `<svg width="180" height="180" viewBox="0 0 180 180"><rect x="20" y="20" width="140" height="140" rx="15" fill="white" stroke="${primaryColor}" stroke-width="4"/><text x="90" y="110" font-size="72" fill="${primaryColor}" text-anchor="middle" font-weight="bold">ก</text><path d="M 40 140 L 50 130 Q 90 155 130 130 L 140 140" fill="${secondaryColor}" opacity="0.3"/></svg>`,
+          "fc-25-30-2": `<svg width="180" height="180" viewBox="0 0 180 180"><circle cx="45" cy="50" r="15" fill="${primaryColor}"/><circle cx="90" cy="50" r="15" fill="${primaryColor}"/><circle cx="135" cy="50" r="15" fill="${primaryColor}"/><circle cx="45" cy="100" r="15" fill="${secondaryColor}"/><circle cx="90" cy="100" r="15" fill="${secondaryColor}"/><text x="45" y="140" font-size="24" fill="${primaryColor}" font-weight="bold" text-anchor="middle">3</text><text x="90" y="140" font-size="24" fill="${secondaryColor}" font-weight="bold" text-anchor="middle">2</text><text x="135" y="140" font-size="24" fill="${primaryColor}" font-weight="bold" text-anchor="middle">1</text></svg>`,
+          "fc-25-30-3": `<svg width="180" height="180" viewBox="0 0 180 180"><ellipse cx="60" cy="90" rx="30" ry="40" fill="${primaryColor}"/><ellipse cx="120" cy="90" rx="30" ry="40" fill="${primaryColor}"/><circle cx="60" cy="85" r="8" fill="white"/><circle cx="120" cy="85" r="8" fill="white"/><path d="M 50 110 L 40 125 M 50 110 L 60 125" stroke="${textColor}" stroke-width="3"/><path d="M 70 110 L 80 125 M 70 110 L 60 125" stroke="${textColor}" stroke-width="3"/><path d="M 110 110 L 100 125 M 110 110 L 120 125" stroke="${textColor}" stroke-width="3"/><path d="M 130 110 L 140 125 M 130 110 L 120 125" stroke="${textColor}" stroke-width="3"/><text x="90" y="160" font-size="16" fill="${textColor}" text-anchor="middle" font-weight="bold">รองเท้าคู่</text></svg>`,
+          
+          // 2.5-3 ปี
+          "fc-31-36-1": `<svg width="180" height="180" viewBox="0 0 180 180"><rect x="30" y="30" width="60" height="40" rx="5" fill="${primaryColor}"/><text x="60" y="55" font-size="16" fill="white" text-anchor="middle" font-weight="bold">🚗 รถ</text><rect x="30" y="80" width="60" height="40" rx="5" fill="${secondaryColor}"/><text x="60" y="105" font-size="16" fill="white" text-anchor="middle" font-weight="bold">🍎 แอปเปิ้ล</text><rect x="30" y="130" width="60" height="40" rx="5" fill="${primaryColor}"/><text x="60" y="155" font-size="16" fill="white" text-anchor="middle" font-weight="bold">👨‍⚕️ หมอ</text><rect x="100" y="50" width="50" height="80" rx="8" fill="white" stroke="${secondaryColor}" stroke-width="3"/><text x="125" y="95" font-size="14" fill="${textColor}" text-anchor="middle">หมวดหมู่</text></svg>`,
+          "fc-31-36-2": `<svg width="180" height="180" viewBox="0 0 180 180"><circle cx="55" cy="60" r="30" fill="${primaryColor}"/><text x="55" y="70" font-size="16" fill="white" text-anchor="middle" font-weight="bold">วงกลม</text><rect x="95" y="30" width="60" height="60" fill="${secondaryColor}"/><text x="125" y="70" font-size="14" fill="white" text-anchor="middle" font-weight="bold">สี่เหลี่ยม</text><polygon points="55,100 85,150 25,150" fill="${primaryColor}"/><text x="55" y="160" font-size="14" fill="${textColor}" text-anchor="middle" font-weight="bold">สามเหลี่ยม</text><polygon points="125,105 135,115 130,130 120,130 115,115" fill="#fbbf24"/><text x="125" y="160" font-size="14" fill="${textColor}" text-anchor="middle" font-weight="bold">ดาว</text></svg>`,
+          "fc-31-36-3": `<svg width="180" height="180" viewBox="0 0 180 180"><rect x="20" y="30" width="45" height="40" rx="5" fill="white" stroke="${primaryColor}" stroke-width="3"/><text x="42" y="55" font-size="24" text-anchor="middle">🌅</text><rect x="70" y="30" width="45" height="40" rx="5" fill="white" stroke="${primaryColor}" stroke-width="3"/><text x="92" y="55" font-size="24" text-anchor="middle">🪥</text><rect x="120
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a79e0f2742152ea',t:'MTc2NDY2ODU5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
